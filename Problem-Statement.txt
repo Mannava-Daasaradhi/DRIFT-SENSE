@@ -1,0 +1,9 @@
+Background
+A modern wafer inspection tool must return to exactly the same site on a die – thousands of times per day, across hundreds of dies on every wafer. The first visit is straightforward: the tool finds the target site and records its location. Every subsequent visit must land at the identical spot with nanometre accuracy so that measurements are comparable across time and across different tools.
+In practice, this does not happen perfectly. Motion stages accumulate tiny errors between visits  drift from thermal expansion, vibration from the fab environment, and mechanical slack. These errors compound over time. By the time the tool revisits a site on a different die (or on the same die hours later), it may land several pixels away from the intended location.
+Because all dies on a wafer carry the same repeating circuit layout, the tool cannot simply look at the landed image and know it is wrong  the structure at the wrong location looks almost identical to the correct one. This is the core difficulty: finding a specific site inside a sea of visually similar repeating patterns.
+Applied Materials calls this challenge Navigation-Error Recovery. It is solved today with classical template-matching algorithms, but these break down in highly periodic layouts (DRAM memory arrays, FinFET gate structures) where hundreds of nearly identical features are visible in the same frame. AI and advanced computer vision approaches offer a path to more robust, higher-accuracy recovery.
+What your algorithm must produce:
+Find the location inside the Search Image where the Reference Image pattern appears (shrunk 10x).
+Return the center coordinates (x, y) in pixels of the matching region within the Search Image.
+If more than one matching region is found, return the one closest to the center of the Search Image.
