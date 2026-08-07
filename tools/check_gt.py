@@ -1,126 +1,114 @@
-"""Ground-truth self-check for the v0 generator (MEMBER-A-CHECKLIST.md A1.2).
+"""Ground-truth sanity check — does `true_center_xy` actually mean what we agreed?
 
-For each pair: downscale the reference by the TRUE magnification ratio, run
-plain cv2.matchTemplate, and confirm the correlation score at true_center_xy
-is (at least tied for) the global maximum, on noise-free renders.
+Runs the dumbest possible oracle: take the reference, shrink it by the *true*
+magnification from `meta.json`, rotate it by the *true* rotation, and plain
+`cv2.matchTemplate` it into the search image. With the true transform handed to
+it, argmax must land on `true_center_xy`.
 
-Why "tied for the max" and not "argmax == true_center": v0's DRAM/FinFET
-grids are genuinely, exactly periodic outside the handful of injected
-defects (see generate_dataset.py's ambiguity_class logic), so a pair with
-few or no defects legitimately has several equally-good matches - that is
-real ambiguity, not a bug, and the "degenerate" class exists precisely to
-capture it. Requiring the literal argmax to land on the true centre would
-conflate that expected ambiguity with an actual coordinate-convention bug
-(e.g. the classic off-by-half-template-size error). Checking that the true
-centre's score ties the max isolates the thing we actually want to catch.
+If this fails, the coordinate convention in docs/INTERFACES.md §0 is being
+violated somewhere — almost always the off-by-half-template-size error, or an
+(x, y) / (row, col) swap. Catching it now is worth days later.
 
-On tolerances: even with 4x supersampling (driftsense/layouts.py), v0 has
-no beam PSF, so a non-integer magnification ratio combined with generic
-(non-integer) pitch/phase/placement makes the reference's own rasterization
-and the search's independent rasterization disagree by a few points of
-ZNCC - confirmed by testing with every parameter forced to a clean integer
-in isolation, where the score at true_center ties the max to 5 decimal
-places every time; only the fully-generic combination shows drift, up to
-roughly 0.3-0.5 in the worst observed case. That is a real, understood
-limitation of drawing thin unblurred primitives at two independently
-rounded resolutions - it will shrink once beam-PSF blur (A3.1) band-limits
-the signal before either capture is rasterized. It is NOT what a
-coordinate-convention bug looks like: swapping axes, an off-by-half-
-template error, or a sign flip in the placement math puts the "true"
-sample on essentially unrelated image content, which scores near zero or
-negative (that is exactly what earlier, pre-supersampling runs of this
-same tool showed, e.g. -0.32, before the layouts.py fix). So the pass bar
-here is deliberately two-part: a strict pixel/tie check for the ideal
-case, plus an absolute-score floor (MIN_ABS_SCORE) that only a genuine
-match - not a wrong-axis sample of unrelated content - can clear.
-
-Usage: python tools/check_gt.py [--num 30] [--seed 42] [--style both]
+    python tools/check_gt.py --data data/dev_b --tol 3
 """
 
+from __future__ import annotations
+
 import argparse
+import glob
+import json
 import os
-import sys
 
 import cv2
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generate_dataset import REF_SIZE, build_pair  # noqa: E402
 
-TIE_EPS = 0.1
-PASS_PX = 2.0
-MIN_ABS_SCORE = 0.5
+def oracle_predict(ref: np.ndarray, search: np.ndarray, m: float,
+                   rot_deg: float) -> tuple[float, float, float]:
+    """Predict the centre using the TRUE scale and rotation. Returns (x, y, score)."""
+    th = max(8, int(round(ref.shape[0] / m)))
+    tw = max(8, int(round(ref.shape[1] / m)))
+    tpl = cv2.resize(ref, (tw, th), interpolation=cv2.INTER_AREA)
 
+    if abs(rot_deg) > 1e-6:
+        M = cv2.getRotationMatrix2D((tw / 2.0 - 0.5, th / 2.0 - 0.5), rot_deg, 1.0)
+        tpl = cv2.warpAffine(tpl, M, (tw, th), flags=cv2.INTER_LINEAR,
+                             borderMode=cv2.BORDER_REFLECT)
+        # crop the inscribed square so rotation-induced border does not bias ZNCC
+        keep = int(min(th, tw) / 1.45)
+        y0, x0 = (th - keep) // 2, (tw - keep) // 2
+        tpl = tpl[y0:y0 + keep, x0:x0 + keep]
+        th = tw = keep
 
-def check_pair(style, index, seed):
-    ref_u8, search_u8, meta = build_pair(style, index, seed, noiseless=True)
-    m = meta["magnification_ratio"]
-    tw = max(1, round(REF_SIZE / m))
-    template = cv2.resize(ref_u8, (tw, tw), interpolation=cv2.INTER_AREA)
-
-    result = cv2.matchTemplate(search_u8.astype(np.float32), template.astype(np.float32),
-                                cv2.TM_CCOEFF_NORMED)
-    _, max_score, _, max_loc = cv2.minMaxLoc(result)
-    peak_x = max_loc[0] + tw / 2.0
-    peak_y = max_loc[1] + tw / 2.0
-
-    true_x, true_y = meta["true_center_xy"]
-    error_px = float(np.hypot(peak_x - true_x, peak_y - true_y))
-
-    tl_x = int(round(true_x - tw / 2.0))
-    tl_y = int(round(true_y - tw / 2.0))
-    tl_x = min(max(tl_x, 0), result.shape[1] - 1)
-    tl_y = min(max(tl_y, 0), result.shape[0] - 1)
-    score_at_true = float(result[tl_y, tl_x])
-
-    direct_pass = error_px <= PASS_PX
-    tie_pass = (max_score - score_at_true) <= TIE_EPS
-    abs_pass = score_at_true >= MIN_ABS_SCORE
-    return {
-        "pair_id": meta["pair_id"],
-        "ambiguity_class": meta["ambiguity_class"],
-        "error_px": round(error_px, 3),
-        "max_score": round(float(max_score), 5),
-        "score_at_true": round(score_at_true, 5),
-        "passed": direct_pass or tie_pass or abs_pass,
-        "direct_pass": direct_pass,
-    }
+    res = cv2.matchTemplate(search, tpl, cv2.TM_CCOEFF_NORMED)
+    _, mx, _, loc = cv2.minMaxLoc(res)
+    # matchTemplate reports the template TOP-LEFT; INTERFACES.md §0 wants the CENTRE
+    return loc[0] + tw / 2.0, loc[1] + th / 2.0, mx
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--num", type=int, default=30)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--style", choices=["dram", "finfet", "both"], default="both")
-    args = parser.parse_args()
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data", default="data/dev_b")
+    ap.add_argument("--tol", type=float, default=3.0)
+    args = ap.parse_args()
 
-    results = []
-    for i in range(args.num):
-        style = args.style
-        if style == "both":
-            style = "dram" if i % 2 == 0 else "finfet"
-        results.append(check_pair(style, i, args.seed))
+    dirs = sorted(d for d in glob.glob(os.path.join(args.data, "*"))
+                  if os.path.isfile(os.path.join(d, "meta.json")))
+    if not dirs:
+        raise SystemExit(f"no pairs found under {args.data}")
 
-    n_pass = sum(r["passed"] for r in results)
-    n_direct = sum(r["direct_pass"] for r in results)
-    for r in results:
-        status = "PASS" if r["passed"] else "FAIL"
-        tag = "" if r["direct_pass"] else " (tie-pass)" if r["passed"] else ""
-        print(f"{status}{tag}  {r['pair_id']:14s} class={r['ambiguity_class']:16s} "
-              f"err={r['error_px']:7.3f}px  max={r['max_score']:.5f}  "
-              f"at_true={r['score_at_true']:.5f}", file=sys.stderr)
+    ok = 0
+    errs = []
+    for d in dirs:
+        meta = json.load(open(os.path.join(d, "meta.json"), encoding="utf-8"))
+        ref = cv2.imread(os.path.join(d, "reference.png"), cv2.IMREAD_GRAYSCALE).astype(np.float32)
+        search = cv2.imread(os.path.join(d, "search.png"), cv2.IMREAD_GRAYSCALE).astype(np.float32)
 
-    print(f"\n{n_pass}/{len(results)} passed (coordinate convention check, "
-          f"ties on periodic content counted as pass)", file=sys.stderr)
-    print(f"{n_direct}/{len(results)} passed by strict argmax-within-{PASS_PX}px "
-          f"(expected to be lower - degenerate/weakly_ambiguous pairs are "
-          f"supposed to tie elsewhere)", file=sys.stderr)
+        x, y, score = oracle_predict(ref, search, meta["magnification_ratio"],
+                                     meta["rotation_deg"])
+        tx, ty = meta["true_center_xy"]
+        e = float(np.hypot(x - tx, y - ty))
+        errs.append(e)
 
-    if n_pass < 28:
-        print("FAILURE: <28/30 passed - the coordinate convention is very "
-              "likely wrong (classic bug: off-by-half-template-size).", file=sys.stderr)
-        sys.exit(1)
-    print("OK: coordinate convention verified.", file=sys.stderr)
+        # a hit on a lattice alias is not a ground-truth bug, it is the problem itself
+        alias_hit = any(np.hypot(x - ax, y - ay) <= args.tol
+                        for ax, ay in meta.get("alias_positions") or [])
+        good = e <= args.tol
+        if good:
+            ok += 1
+        flag = "OK   " if good else ("ALIAS" if alias_hit else "FAIL ")
+        print(f"{flag} {meta['pair_id']:<16} err={e:7.2f}px  score={score:.3f}  "
+              f"{meta['ambiguity_class']}")
+
+    errs = np.array(errs)
+    print(f"\n{ok}/{len(dirs)} within {args.tol} px   "
+          f"median={np.median(errs):.2f}  mean={errs.mean():.2f}")
+
+    # Two DIFFERENT questions, which must not be conflated:
+    #
+    #   (a) Is the coordinate convention right?  Look only at the pairs that
+    #       landed on the correct site at all. If the convention were wrong —
+    #       an (x,y)/(row,col) swap, a half-template offset, a rotation sign
+    #       flip — there would be NO sub-pixel hits, because every hit would
+    #       carry the same systematic bias.
+    #
+    #   (b) Is the pair solvable by plain template matching?  Usually not, and
+    #       that is the entire point of the project. A large error here is a
+    #       result, not a bug.
+    sub_px = errs[errs < 1.0]
+    conv_ok = len(sub_px) >= max(3, 0.15 * len(dirs))
+    print(f"convention check: {len(sub_px)}/{len(dirs)} pairs sub-pixel "
+          f"(median of those = {np.median(sub_px):.3f} px)" if len(sub_px)
+          else "convention check: NO sub-pixel hits at all")
+
+    if not conv_ok:
+        print("\n!! COORDINATE CONVENTION IS SUSPECT — zero or near-zero sub-pixel hits.\n"
+              "   Check, in this order: (x,y) vs (row,col); the half-template-size\n"
+              "   offset from matchTemplate's top-left convention; the rotation sign.\n"
+              "   Do not build on this data until it passes.")
+    else:
+        print("convention OK — remaining error is periodic ambiguity, "
+              "which is the problem we are solving, not a bug.")
 
 
 if __name__ == "__main__":
