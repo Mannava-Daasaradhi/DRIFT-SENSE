@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Generated pairs are large and reproducible from a seed - keep one sample
+# pair committed per repo requirement #2, gitignore the rest (PLAN.md S3).
+data/*
+!data/dev_v0
+data/dev_v0/*
+!data/dev_v0/dram_00000
+
+weights/*.pt
+!weights/reranker.pt
+
+figures/
