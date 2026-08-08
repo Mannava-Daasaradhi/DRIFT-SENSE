@@ -417,7 +417,7 @@ def generate(style, num, out_dir, seed, ood=False):
 def main():
     parser = argparse.ArgumentParser(
         description="Generate synthetic DRAM/FinFET reference+search pairs for "
-                     "Navigation-Error Recovery localization (DRIFT-SENSE v0).")
+                     "Navigation-Error Recovery localization (DRIFT-SENSE).")
     parser.add_argument("--style", choices=["dram", "finfet", "both"], required=True,
                          help="Die architecture to generate. 'both' alternates per pair.")
     parser.add_argument("--num", type=int, required=True, help="Number of pairs to generate.")

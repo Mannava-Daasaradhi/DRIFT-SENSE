@@ -154,6 +154,8 @@ def apply_shot_noise(signal, rng, dose):
 def apply_detector(signal, rng, gain=1.0, read_noise_std=0.008):
     """Stage 10: detector gain, additive Gaussian read noise (an electronic
     noise floor, not sample-related), saturation clip, 8-bit quantization.
+    See CITATIONS.md, Detector - Timischl et al. 2012's 5-stage detector
+    signal chain covers this alongside stage 9's shot noise.
     """
     out = signal * gain + rng.normal(0.0, read_noise_std, size=signal.shape).astype(np.float32)
     out = np.clip(out, 0.0, 1.0)
