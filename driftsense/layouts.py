@@ -51,14 +51,20 @@ def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
     px, py = pitch_x * ss, pitch_y * ss
     lw = max(1, round(line_width * ss))
 
+    # Material baseline is deliberately NOT 1.0 - real SEM flat regions sit at
+    # a moderate grey, with only edges brightening toward saturation
+    # (apply_edge_brightening). Painting lines fully saturated here would
+    # leave that stage with no headroom to have any visible effect.
+    material = 0.55
+
     x = (phase_x * ss) % px
     while x < S:
-        cv2.line(img, (round(x), 0), (round(x), S - 1), 1.0, lw, cv2.LINE_AA)
+        cv2.line(img, (round(x), 0), (round(x), S - 1), material, lw, cv2.LINE_AA)
         x += px
 
     y = (phase_y * ss) % py
     while y < S:
-        cv2.line(img, (0, round(y)), (S - 1, round(y)), 1.0, lw, cv2.LINE_AA)
+        cv2.line(img, (0, round(y)), (S - 1, round(y)), material, lw, cv2.LINE_AA)
         y += py
 
     r = max(1, round(contact_radius * ss))
@@ -66,7 +72,7 @@ def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
     while yc < S:
         xc = (phase_x * ss) % px
         while xc < S:
-            cv2.circle(img, (round(xc), round(yc)), r, 1.0, -1, cv2.LINE_AA)
+            cv2.circle(img, (round(xc), round(yc)), r, material, -1, cv2.LINE_AA)
             xc += px
         yc += py
 
@@ -77,7 +83,7 @@ def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
 
 
 def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
-                   phase_x=0.0, defects=None, block=None):
+                   phase_x=0.0, defects=None, block=None, epi_width=0.0):
     """Render a FinFET-style dense parallel-fin grid crossed by horizontal gate bars.
 
     size: output canvas is size x size.
@@ -87,6 +93,8 @@ def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
       y-axis unique even though the x-axis (fin pitch) is periodic.
     gate_width: gate bar thickness, in OUTPUT pixels.
     phase_x: fin phase offset, in OUTPUT pixels.
+    epi_width: source/drain epi region extent flanking each gate, in OUTPUT
+      pixels - a slightly brighter band, per MEMBER-A-CHECKLIST.md A2.1.
     defects, block: see render_dram.
 
     Returns a float32 array in [0, 1], shape (size, size).
@@ -96,18 +104,32 @@ def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
     img = np.zeros((S, S), dtype=np.float32)
     pfin = pitch_fin * ss
     lw = max(1, round(fin_width * ss))
+    gw = max(1, round(gate_width * ss))
+    ew = round(epi_width * ss)
+
+    # Epi regions are background, drawn first, so fins and gates sit on top.
+    if ew > 0:
+        for gy in gate_ys:
+            gy_s = gy * ss
+            for sign in (-1, 1):
+                y0 = gy_s + sign * gw / 2.0
+                y1 = y0 + sign * ew
+                ylo, yhi = sorted((y0, y1))
+                if yhi < 0 or ylo > S:
+                    continue
+                cv2.rectangle(img, (0, round(max(0, ylo))), (S - 1, round(min(S, yhi))),
+                              0.35, -1, cv2.LINE_AA)
 
     x = (phase_x * ss) % pfin
     while x < S:
-        cv2.line(img, (round(x), 0), (round(x), S - 1), 0.85, lw, cv2.LINE_AA)
+        cv2.line(img, (round(x), 0), (round(x), S - 1), 0.5, lw, cv2.LINE_AA)
         x += pfin
 
-    gw = max(1, round(gate_width * ss))
     for gy in gate_ys:
         gy_s = gy * ss
         if -gw <= gy_s <= S + gw:
             cv2.rectangle(img, (0, round(gy_s - gw / 2)), (S - 1, round(gy_s + gw / 2)),
-                          1.0, -1, cv2.LINE_AA)
+                          0.6, -1, cv2.LINE_AA)
 
     apply_block(img, block, scale=ss)
     _apply_defects(img, defects, scale=ss)

@@ -24,7 +24,7 @@ import os
 import numpy as np
 
 from driftsense.layouts import render_dram, render_finfet
-from driftsense.sem_physics import sem_forward
+from driftsense.sem_physics import apply_beam_psf, apply_edge_brightening, sem_forward
 
 REF_SIZE = 1000
 SEARCH_SIZE = 1000
@@ -157,6 +157,14 @@ def build_pair(style, pair_index, seed, noiseless=False):
     level, block_world, defects_world, aperiodic_fraction = _make_aperiodic_content(layout_rng)
     (sx, sy), search_origin_world = _placement(layout_rng, m)
 
+    # SEM physics stages 3 (SE yield / edge brightening) and 5 (beam PSF),
+    # TECH-SPEC.md S4.2 - A2.3. Parameters are in REFERENCE-pixel units,
+    # like every other length in this generator; dividing by m for the
+    # search-resolution call is the same convention as pitch/line_width/etc.
+    k_edge = layout_rng.uniform(0.4, 1.0)
+    lambda_esc_ref = layout_rng.uniform(2.0, 6.0)
+    sigma_beam_ref = layout_rng.uniform(2.0, 5.0)
+
     def _defects_to(scale_origin=None):
         if scale_origin is None:
             return [(wx, wy, r, s) for wx, wy, r, s in defects_world]
@@ -207,23 +215,37 @@ def build_pair(style, pair_index, seed, noiseless=False):
         gate_width_ref = layout_rng.uniform(15, 30)
         gate_ys_ref = sorted(layout_rng.uniform(0.25 * REF_SIZE, 0.75 * REF_SIZE, size=n_gates).tolist())
         phase_x_ref = layout_rng.uniform(0, pitch_fin_ref)
+        epi_width_ref = layout_rng.uniform(20, 45)
 
         pitch_fin_s = pitch_fin_ref / m
         phase_x_s = (phase_x_ref - search_origin_world[0]) / m
         gate_ys_s = [(gy - search_origin_world[1]) / m for gy in gate_ys_ref]
 
         ref_clean = render_finfet(REF_SIZE, pitch_fin_ref, fin_width_ref, gate_ys_ref,
-                                   gate_width_ref, phase_x_ref, _defects_to(), _block_to())
+                                   gate_width_ref, phase_x_ref, _defects_to(), _block_to(),
+                                   epi_width_ref)
         search_clean = render_finfet(SEARCH_SIZE, pitch_fin_s, max(1.0, fin_width_ref / m),
                                       gate_ys_s, max(1.0, gate_width_ref / m), phase_x_s,
-                                      _defects_to(search_scale_origin), _block_to(search_scale_origin))
+                                      _defects_to(search_scale_origin), _block_to(search_scale_origin),
+                                      max(1.0, epi_width_ref / m))
         lattice_period_search_px = [pitch_fin_s, None]
         sem_params = {
             "pitch_fin_ref": pitch_fin_ref, "fin_width_ref": fin_width_ref,
             "n_gates": int(n_gates), "gate_width_ref": gate_width_ref,
+            "epi_width_ref": epi_width_ref,
         }
     else:
         raise ValueError(f"unknown style {style!r}")
+
+    # Stage 3 then stage 5, in that order (TECH-SPEC.md S4.2: the beam blurs
+    # what edge-brightening already brightened, not the other way round).
+    # lambda_esc/sigma_beam are divided by m for the search capture, same as
+    # every other length parameter - the same physical scale covers fewer
+    # search pixels than reference pixels.
+    ref_clean = apply_edge_brightening(ref_clean, k_edge, lambda_esc_ref)
+    ref_clean = np.clip(apply_beam_psf(ref_clean, sigma_beam_ref), 0.0, 1.0)
+    search_clean = apply_edge_brightening(search_clean, k_edge, max(0.5, lambda_esc_ref / m))
+    search_clean = np.clip(apply_beam_psf(search_clean, max(0.4, sigma_beam_ref / m)), 0.0, 1.0)
 
     seed_ref = int(_rng_for(seed, pair_index, 1).integers(0, 2**31 - 1))
     seed_search = int(_rng_for(seed, pair_index, 2).integers(0, 2**31 - 1))
@@ -232,6 +254,9 @@ def build_pair(style, pair_index, seed, noiseless=False):
     sem_params.update({"noise_std_ref": noise_std_ref, "noise_std_search": noise_std_search,
                         "aperiodic_content_level": round(float(level), 4),
                         "aperiodic_energy_fraction": round(float(aperiodic_fraction), 5),
+                        "k_edge": round(float(k_edge), 4),
+                        "lambda_esc_ref": round(float(lambda_esc_ref), 4),
+                        "sigma_beam_ref": round(float(sigma_beam_ref), 4),
                         "v0_placeholder": True})
 
     if noiseless:
