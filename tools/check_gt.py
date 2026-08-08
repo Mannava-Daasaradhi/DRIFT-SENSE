@@ -59,6 +59,8 @@ def main() -> None:
 
     ok = 0
     errs = []
+    offsets = []            # signed (dx, dy) for pairs that found the right site
+    swapped = []            # error if (x, y) had been (y, x) — the swap hypothesis
     for d in dirs:
         meta = json.load(open(os.path.join(d, "meta.json"), encoding="utf-8"))
         ref = cv2.imread(os.path.join(d, "reference.png"), cv2.IMREAD_GRAYSCALE).astype(np.float32)
@@ -69,6 +71,9 @@ def main() -> None:
         tx, ty = meta["true_center_xy"]
         e = float(np.hypot(x - tx, y - ty))
         errs.append(e)
+        swapped.append(float(np.hypot(x - ty, y - tx)))
+        if e <= args.tol:
+            offsets.append((x - tx, y - ty))
 
         # a hit on a lattice alias is not a ground-truth bug, it is the problem itself
         alias_hit = any(np.hypot(x - ax, y - ay) <= args.tol
@@ -95,20 +100,39 @@ def main() -> None:
     #   (b) Is the pair solvable by plain template matching?  Usually not, and
     #       that is the entire point of the project. A large error here is a
     #       result, not a bug.
-    sub_px = errs[errs < 1.0]
-    conv_ok = len(sub_px) >= max(3, 0.15 * len(dirs))
-    print(f"convention check: {len(sub_px)}/{len(dirs)} pairs sub-pixel "
-          f"(median of those = {np.median(sub_px):.3f} px)" if len(sub_px)
-          else "convention check: NO sub-pixel hits at all")
+    # A convention bug is a SYSTEMATIC offset, so test for one directly rather
+    # than counting sub-pixel hits. The count-based test used here previously
+    # was measuring the wrong thing: scan distortion and shot noise put many
+    # perfectly-correct pairs at 1-2 px, so a healthy dataset could show only a
+    # handful of true sub-pixel hits and trip a "CONVENTION IS SUSPECT" banner
+    # that sent people hunting a bug that was not there.
+    n_hit = len(offsets)
+    if n_hit >= 5:
+        off = np.asarray(offsets, dtype=float)
+        mdx, mdy = float(np.median(off[:, 0])), float(np.median(off[:, 1]))
+        bias = float(np.hypot(mdx, mdy))
+        print(f"convention check: {n_hit}/{len(dirs)} pairs landed on the true site; "
+              f"median signed offset = ({mdx:+.2f}, {mdy:+.2f}) px")
+        swap_better = float(np.median(swapped)) < 0.5 * float(np.median(errs))
 
-    if not conv_ok:
-        print("\n!! COORDINATE CONVENTION IS SUSPECT — zero or near-zero sub-pixel hits.\n"
-              "   Check, in this order: (x,y) vs (row,col); the half-template-size\n"
-              "   offset from matchTemplate's top-left convention; the rotation sign.\n"
-              "   Do not build on this data until it passes.")
+        if swap_better:
+            print("\n!! (x, y) LOOKS SWAPPED — errors drop sharply when x and y are\n"
+                  "   exchanged. Fix the axis order before doing anything else.")
+        elif bias > 1.5:
+            print(f"\n!! SYSTEMATIC {bias:.2f} px BIAS on pairs that found the right site.\n"
+                  "   That is a convention bug, not noise. Check the half-template-size\n"
+                  "   offset from matchTemplate's top-left convention, then the\n"
+                  "   rotation sign.")
+        else:
+            print("convention OK — no systematic bias. The remaining large errors are\n"
+                  "   periodic ambiguity (this oracle is a plain argmax and lands on\n"
+                  "   whichever lattice site scores highest), which is the problem the\n"
+                  "   project solves, not a bug in the data.")
     else:
-        print("convention OK — remaining error is periodic ambiguity, "
-              "which is the problem we are solving, not a bug.")
+        print(f"convention check: only {n_hit} pairs landed within {args.tol} px — too "
+              f"few to test for a systematic bias.\n"
+              "   This is inconclusive, NOT a failure. Re-run on a larger or less\n"
+              "   ambiguous split before concluding anything about the convention.")
 
 
 if __name__ == "__main__":

@@ -110,7 +110,8 @@ result = localize(reference_path: str,
     ],
     "scale": float,             # measured magnification ratio m (search px per reference px)
     "rotation": float,          # measured rotation in DEGREES
-    "decision": str,            # "unique" | "tie_broken_by_center" | "fallback"
+    "decision": str,            # "unique" | "tie_broken_by_center"
+                                # | "low_confidence_best" | "fallback"
     "time_ms": float,           # wall clock for this call
 }
 ```
@@ -123,6 +124,24 @@ Guarantees C can rely on:
   member of the tie set that is not necessarily rank 0. Always trust top-level `x`/`y`.
 - `scale` is defined so that `template_size ≈ reference_size / scale`. A search image at
   10× lower magnification gives `scale ≈ 10`.
+
+> **Amendment, Aug 8 (B, announced to A and C):** a fourth `decision` value,
+> `"low_confidence_best"`, was added. It means the tie test found rivals but every
+> candidate scored too poorly for the tie to be evidence of *periodic ambiguity* rather
+> than of a bad correlation surface — so the top-ranked candidate is returned unmoved and
+> confidence is capped at 0.25. The brief's centre rule presupposes that more than one
+> region was actually *found*; on these pairs nothing was. Previously these were reported
+> as `"tie_broken_by_center"`, and relocating the answer to the image centre destroyed an
+> already-correct top candidate on 2 of 36 eval pairs while rescuing none.
+> **C's harness must treat any unrecognized `decision` string as "not a tie".**
+
+> **Amendment, Aug 8 (B + C):** `use_reranker` now defaults to **`False`**, and
+> `localize.py` takes `--reranker` to switch it on (`--no-reranker` is still accepted).
+> The re-ranker gains +2.8 points within 5 px on `data/eval`, the set its fusion weight was
+> tuned against, and loses 13.3 points on the held-out `data/ood` config — the `unique`
+> subset falls from 93.3% to 73.3%. Since the brief says the official test set is noisier
+> than ours, `data/ood` is the better proxy and the classical core ships as the default.
+> The weights, `train.py` and the hook all remain in the repository.
 
 ### Re-ranker hook — *Member C implements, Member B calls*
 

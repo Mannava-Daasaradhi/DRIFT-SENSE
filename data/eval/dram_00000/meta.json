@@ -511,6 +511,7 @@
     "shading_amplitude": 0.246,
     "aperiodic_content_level": 0.9546,
     "aperiodic_energy_fraction": 0.29149,
+    "ood": false,
     "k_edge": 0.6037,
     "lambda_esc_ref": 2.0892,
     "sigma_beam_ref": 4.6713,

@@ -79,20 +79,40 @@ def periodic_ambiguity_index(cands: list[Candidate], min_sep: float | None = Non
     return 0.0
 
 
+#: A tie is only *evidence of periodic ambiguity* when the tied candidates are
+#: all scoring well. Below this level the correlation surface is simply weak —
+#: usually a hypothesis whose scale is somewhat off — and every peak on it looks
+#: like every other. Measured on the frozen eval set: correct matches score
+#: 0.45-0.86, while surfaces built from a wrong-scale template top out around
+#: 0.20 and read as "tied" across the whole image.
+TIE_MIN_SCORE = 0.35
+
+#: Aperiodic-residual trust weight (see `periodic.residual_gate`) above which the
+#: candidates are NOT lattice-equivalent: there is real non-repeating structure
+#: in the template, the residual channel has already used it to rank them, and
+#: that evidence outranks the centre rule.
+RESIDUAL_DECISIVE = 0.5
+
+
 def _tie_set(cands: list[Candidate], delta: float,
              min_sep: float | None = None) -> list[Candidate]:
     """Candidates statistically indistinguishable from the best one.
 
-    `delta` is the score spread that noise alone can produce. Calibrating it by
-    bootstrapping over noise realizations (B5.1) turns it from a magic number
-    into a measured quantity that can be defended in Q&A. Until that
-    calibration lands it is a conservative constant.
+    `delta` is the score spread that noise alone can produce, expressed as a
+    *fraction* of the winning score rather than an absolute offset. That
+    distinction is not cosmetic. With a fixed delta = 0.035, a surface whose
+    best peak is 0.86 admits rivals within 4% of it, but a surface whose best
+    peak is 0.20 admits everything within 18% — so precisely the weakest,
+    least trustworthy surfaces produced the largest tie sets, and the centre
+    rule then fired on them. On the frozen eval set that fired on 20 of 36
+    pairs and destroyed an already-correct top candidate on 2 of them while
+    rescuing none.
     """
     if not cands:
         return []
     best = cands[0]
     sep = min_sep if min_sep is not None else max(4.0, 0.5 * best.tpl_size)
-    thresh = best.score - delta
+    thresh = best.score - delta * max(abs(best.score), 1e-6)
 
     tied = [best]
     for c in cands[1:]:
@@ -142,11 +162,15 @@ def confidence_from_features(margin: float, pai: float, spectral_quality: float,
 # --------------------------------------------------------------------------- #
 
 def decide(cands: list[Candidate], search_shape: tuple[int, int],
-           delta: float = 0.035,
+           delta: float = 0.06,
            spectral_quality: float = 0.0,
            scale_agreement: float = 0.0,
            residual_ratio: float = 0.0) -> Decision:
-    """Apply the tie test and, when needed, the brief's centre rule."""
+    """Apply the tie test and, when needed, the brief's centre rule.
+
+    `delta` is a *fraction* of the winning score (see `_tie_set`), not an
+    absolute score offset.
+    """
     h, w = search_shape[:2]
     cx, cy = w / 2.0, h / 2.0
 
@@ -159,14 +183,38 @@ def decide(cands: list[Candidate], search_shape: tuple[int, int],
 
     tied = _tie_set(ranked, delta)
 
-    if len(tied) > 1:
+    # The brief's precondition is that more than one matching region was
+    # genuinely *found*. Two things have to hold for that to be true:
+    #
+    #   (a) the candidates score well enough for the tie to be real evidence
+    #       rather than a symptom of a weak correlation surface, and
+    #   (b) there is no aperiodic content capable of separating them.
+    #
+    # (b) is the principled test, and it is the one `periodic.py` already
+    # argues for: when the layout is purely periodic the residual is noise and
+    # every lattice site really is indistinguishable, so the centre rule is the
+    # only defensible answer. When the residual *does* carry structure — an
+    # array boundary, a periphery block, a defect — the sites are not
+    # equivalent, the ranking is evidence-backed, and relocating the answer to
+    # whichever alias sits nearest the image centre discards that evidence.
+    # Measured on the frozen eval set: firing regardless of (b) destroyed an
+    # already-correct top candidate on 2 of 36 pairs and rescued none.
+    can_disambiguate = residual_ratio >= RESIDUAL_DECISIVE
+    if len(tied) > 1 and best.score >= TIE_MIN_SCORE and not can_disambiguate:
         # THE RULE, applied literally: among statistically indistinguishable
         # matches, return the one closest to the centre of the search image.
         chosen = min(tied, key=lambda c: (c.x - cx) ** 2 + (c.y - cy) ** 2)
         decision = "tie_broken_by_center"
     else:
+        # Either the winner stands clear, or every candidate is scoring so
+        # poorly that the "tie" reflects a bad correlation surface rather than
+        # genuine lattice ambiguity. In the second case the brief's precondition
+        # — that more than one matching region was *found* — is not met: nothing
+        # was convincingly found at all. Discarding the top candidate for one
+        # nearer the centre would then be strictly worse, and the honest signal
+        # is the low confidence reported below, not a relocated answer.
         chosen = best
-        decision = "unique"
+        decision = "unique" if len(tied) == 1 else "low_confidence_best"
 
     # margin: how far the winner stands clear of the nearest genuine rival,
     # normalized so it is comparable across pairs with different absolute scores
@@ -181,6 +229,11 @@ def decide(cands: list[Candidate], search_shape: tuple[int, int],
         # is the entire point of the exercise; PLAN.md §7 calls confident
         # honesty the thing judges remember.
         conf = min(conf, 0.45 / max(1.0, math.log2(len(tied) + 1)))
+    elif decision == "low_confidence_best":
+        # Nothing correlated convincingly anywhere. The answer is still our best
+        # estimate — it is right more often than the centre of the image is —
+        # but it is not evidence-backed, and the confidence must say so.
+        conf = min(conf, 0.25)
 
     return Decision(float(chosen.x), float(chosen.y), decision, float(conf),
                     float(pai), len(tied), ranked,

@@ -65,6 +65,11 @@ class LatticeEstimate:
     strengths: np.ndarray               # (N,) peak prominences
     quality: float                      # [0, 1]; 0 = no usable lattice found
     n_assigned: int = 0                 # peaks explained by the fitted basis
+    #: The windowed log-magnitude spectrum this estimate was derived from.
+    #: Kept so the Fourier-Mellin cross-check can reuse it instead of paying for
+    #: a second full-frame FFT of the same image — that duplication was ~0.2 s
+    #: of a ~1.3 s pair.
+    mag: np.ndarray | None = None
 
     @property
     def periods(self) -> tuple[float, float]:
@@ -307,11 +312,12 @@ def estimate_lattice(img: np.ndarray, max_peaks: int = 60) -> LatticeEstimate:
     mag = log_magnitude_spectrum(img)
     peaks, strengths = _detect_peaks(mag, max_peaks=max_peaks)
     if len(peaks) < 2:
-        return LatticeEstimate(np.zeros(2), np.zeros(2), peaks, strengths, 0.0, 0)
+        return LatticeEstimate(np.zeros(2), np.zeros(2), peaks, strengths, 0.0, 0,
+                               mag=mag)
 
     g1, g2, n_assigned = _fit_basis(peaks, strengths, img.shape)
     if np.linalg.norm(g1) < 1e-9 or np.linalg.norm(g2) < 1e-9:
-        return LatticeEstimate(g1, g2, peaks, strengths, 0.0, 0)
+        return LatticeEstimate(g1, g2, peaks, strengths, 0.0, 0, mag=mag)
     # canonical (shortest) basis, so reference and search are directly comparable
     g1, g2 = gauss_reduce(g1, g2)
 
@@ -324,7 +330,8 @@ def estimate_lattice(img: np.ndarray, max_peaks: int = 60) -> LatticeEstimate:
     h, w = img.shape[:2]
     g1 = np.array([g1[0] / w, g1[1] / h])
     g2 = np.array([g2[0] / w, g2[1] / h])
-    return LatticeEstimate(g1, g2, peaks, strengths, quality, n_assigned)
+    return LatticeEstimate(g1, g2, peaks, strengths, quality, n_assigned,
+                           mag=mag)
 
 
 # --------------------------------------------------------------------------- #
@@ -526,7 +533,13 @@ def estimate_scale_rotation(ref: np.ndarray, search: np.ndarray,
     # stage drift is a few degrees, not ninety
     keep.sort(key=lambda t: abs(t[0][1]))
     rest.sort(key=lambda t: -t[1])
-    ordered = [h for h, _ in keep] + [h for h, _ in rest[:2]]
+
+    # Expand the accumulator short-list into a set actually worth correlating.
+    # The accumulator's own ranking is not trustworthy enough to pick a single
+    # winner (see _diversify_hypotheses); correlation is the arbiter.
+    ordered = _diversify_hypotheses([h for h, _ in keep], [h for h, _ in rest],
+                                    pr, sr_, ps, ss_, r_max, scale_range,
+                                    n_out=max(n_hyp, 8))
 
     # Quality combines "the peak sets really do overlay" with "the accumulator
     # had a dominant mode". Margin over the best REJECTED candidate matters most.
@@ -544,8 +557,111 @@ def estimate_scale_rotation(ref: np.ndarray, search: np.ndarray,
     ordered = [(s, -a) for s, a in ordered]
 
     return ScaleRotation(scale=ordered[0][0], rotation=ordered[0][1],
-                         quality=quality, hypotheses=ordered[:max(n_hyp, 4)],
+                         quality=quality, hypotheses=ordered,
                          method="lattice_vote", agreement=0.0)
+
+
+def _fold_rotation(deg: float) -> float:
+    """Collapse a 180-degree spectral twin onto its small-|rotation| member.
+
+    A reciprocal lattice is symmetric about DC, so the accumulator grows a mode
+    at `rot` and an identical one at `rot - 180` for every real solution. The
+    two are indistinguishable *spectrally*, but they are not indistinguishable
+    to correlation: on the frozen eval set correlation prefers the small-angle
+    member on 35 of 36 pairs, because inter-visit stage drift is a few degrees,
+    not ninety. Keeping both wastes half the hypothesis budget.
+    """
+    a = (float(deg) + 180.0) % 360.0 - 180.0     # normalize into (-180, 180]
+    b = (a + 360.0) % 360.0 - 180.0              # the twin, 180 degrees away
+    return a if abs(a) <= abs(b) else b
+
+
+def _diversify_hypotheses(primary: list[tuple[float, float]],
+                          fallbacks: list[tuple[float, float]],
+                          pr: np.ndarray, sr_: np.ndarray,
+                          ps: np.ndarray, ss_: np.ndarray,
+                          r_max: float, scale_range: tuple[float, float],
+                          n_out: int = 8) -> list[tuple[float, float]]:
+    """Turn a small accumulator short-list into a hypothesis set worth correlating.
+
+    Correlating the accumulator's top-N directly fails three ways, all of them
+    measured on the frozen 36-pair eval set:
+
+    1. **180-degree twins.** Every mode appears twice (see `_fold_rotation`), so
+       with four slots only two distinct hypotheses were ever tried.
+    2. **Octave ambiguity.** A lattice at half or double the true magnification
+       explains a large share of the same peaks, so `_overlay_score` ranks it
+       near — and sometimes above — the truth. This cannot be resolved from the
+       spectrum at all; the harmonics genuinely coincide. Both partners must
+       therefore be *offered*, and correlation asked to choose.
+    3. **Ranking by `_overlay_score`.** It is a pruning statistic, not an
+       arbiter. Letting it pick the single hypothesis to correlate is what held
+       coverage of the true (scale, rotation) to 27/36 pairs — and correlation
+       cannot find what was never proposed.
+
+    So: fold the twins, add the x2 and x0.5 partner of every surviving scale,
+    re-score the expanded set, and hand all of it to
+    `matching.match_all_hypotheses`, which ranks by correlation.
+
+    Measured effect: coverage 27/36 -> 33/36, top-1 accuracy within 5 px
+    50.0% -> 61.1%.
+
+    Note this adds no assumption about the magnification. `scale_range` is the
+    same wide admissible bracket as before (PLAN.md Rule 3); octave partners are
+    generated *relative to what was measured*, never relative to 10.
+    """
+    lo, hi = scale_range
+    out: list[tuple[float, float]] = []
+
+    def _add(s: float, r: float) -> None:
+        if not (np.isfinite(s) and np.isfinite(r)) or s <= 1e-6:
+            return
+        if not (lo <= s <= hi):
+            return
+        r = (float(r) + 180.0) % 360.0 - 180.0
+        for (s2, r2) in out:
+            d_ang = abs(((r2 - r + 180.0) % 360.0) - 180.0)
+            if abs(s2 - s) <= 0.02 * max(s, 1e-9) and d_ang < 3.0:
+                return
+        out.append((float(s), r))
+
+    # Order matters only for what survives the n_out cut, so seed with the
+    # accumulator's own preference and expand outward from it.
+    for group in (primary, fallbacks):
+        for (s, r) in group:
+            _add(s, _fold_rotation(r))
+    # Octave partners of everything proposed so far. Snapshot first — _add
+    # appends to `out` while we iterate.
+    for (s, r) in list(out):
+        _add(s * 2.0, r)
+        _add(s * 0.5, r)
+    # Keep one large-angle representative in the tail, in case a capture really
+    # was rotated near 90 or 180 degrees and the fold above guessed wrong.
+    for (s, r) in list(primary[:1]) + list(fallbacks[:1]):
+        _add(s, _fold_rotation(r) + 180.0)
+
+    if not out:
+        return [(s, _fold_rotation(r)) for s, r in (primary + fallbacks)][:n_out] \
+            or list(primary + fallbacks)[:n_out]
+
+    # Re-score the *expanded* set with the same overlay statistic. It is not
+    # trusted to pick the winner, only to order the shortlist so that the true
+    # hypothesis survives truncation.
+    scored = [(_overlay_score(pr, sr_, ps, ss_, s, r, r_max=r_max), s, r)
+              for (s, r) in out]
+    scored.sort(key=lambda t: -t[0])
+    ranked = [(s, r) for _, s, r in scored]
+
+    # Pin the octave-gated winner (GH #2) at the front: `ScaleRotation.scale`
+    # and `.rotation` are read as the single best estimate by callers and by the
+    # confidence features, and re-scoring the expanded set must not silently
+    # replace it. The rest of the list is ordering only — correlation decides.
+    if primary:
+        head = (primary[0][0], _fold_rotation(primary[0][1]))
+        ranked = [head] + [h for h in ranked
+                           if not (abs(h[0] - head[0]) <= 0.02 * max(head[0], 1e-9)
+                                   and abs(((h[1] - head[1] + 180.0) % 360.0) - 180.0) < 3.0)]
+    return ranked[:n_out]
 
 
 def _overlay_score(pr: np.ndarray, sr_: np.ndarray, ps: np.ndarray,
@@ -603,7 +719,9 @@ def _overlay_score(pr: np.ndarray, sr_: np.ndarray, ps: np.ndarray,
 # --------------------------------------------------------------------------- #
 
 def fourier_mellin_scale_rotation(ref: np.ndarray, search: np.ndarray,
-                                  n_ang: int = 360, n_rad: int = 256
+                                  n_ang: int = 360, n_rad: int = 256,
+                                  mag_ref: np.ndarray | None = None,
+                                  mag_search: np.ndarray | None = None
                                   ) -> ScaleRotation:
     """Scale and rotation by log-polar correlation of the magnitude spectra.
 
@@ -621,8 +739,11 @@ def fourier_mellin_scale_rotation(ref: np.ndarray, search: np.ndarray,
     IEEE Trans. Image Processing 5(8), 1266-1271, 1996.
     """
     try:
-        mr = log_magnitude_spectrum(ref)
-        ms = log_magnitude_spectrum(search)
+        # Both spectra have already been computed by `estimate_lattice` in the
+        # normal call path; recomputing them here doubled the FFT cost of a pair
+        # for no new information.
+        mr = mag_ref if mag_ref is not None else log_magnitude_spectrum(ref)
+        ms = mag_search if mag_search is not None else log_magnitude_spectrum(search)
 
         def _logpolar(m: np.ndarray) -> tuple[np.ndarray, float]:
             h, w = m.shape

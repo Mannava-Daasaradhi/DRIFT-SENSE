@@ -218,12 +218,58 @@ def find_peaks(surface: np.ndarray, tpl_shape: tuple[int, int],
 # multi-hypothesis driver
 # --------------------------------------------------------------------------- #
 
+def coarse_rank(ref: Bands, search: Bands,
+                hypotheses: list[tuple[float, float]],
+                ds: int = 2) -> list[tuple[float, tuple[float, float]]]:
+    """Cheaply order hypotheses by their best correlation at reduced resolution.
+
+    `spectral.py` now proposes eight hypotheses rather than four, because the
+    spectrum cannot resolve the octave ambiguity and correlation must be given
+    the chance to. Running the full scoring path on all eight is wasteful: the
+    expensive stages (both channels, plus the Fourier decomposition and residual
+    correlation) exist to separate *good* candidates from each other, not to
+    reject a hypothesis whose scale is off by a factor of two.
+
+    So rank first at 1/ds resolution on the high-pass channel alone. Correlating
+    a template built at `scale * ds` against a `1/ds` search image is the same
+    match, viewed with ds-times-coarser pixels — ample to tell a plausible
+    hypothesis from a hopeless one, at 1/ds^2 the cost and one channel instead
+    of three.
+    """
+    h, w = search.img.shape[:2]
+    if ds < 2 or min(h, w) // ds < 32:
+        return [(0.0, hyp) for hyp in hypotheses]
+    try:
+        small = preprocess(cv2.resize(search.img, (w // ds, h // ds),
+                                      interpolation=cv2.INTER_AREA))
+    except Exception:
+        return [(0.0, hyp) for hyp in hypotheses]
+
+    out: list[tuple[float, tuple[float, float]]] = []
+    for (s, rot) in hypotheses:
+        score = -1.0
+        try:
+            tpl = build_template(ref, s * ds, rot)
+            if tpl is not None:
+                th, tw = tpl.hp.shape[:2]
+                if 4 <= th <= small.hp.shape[0] and 4 <= tw <= small.hp.shape[1]:
+                    surf = cv2.matchTemplate(small.hp, tpl.hp, cv2.TM_CCOEFF_NORMED)
+                    score = float(np.nan_to_num(surf, nan=-1.0).max())
+        except cv2.error:
+            score = -1.0
+        out.append((score, (s, rot)))
+    out.sort(key=lambda t: -t[0])
+    return out
+
+
 def match_all_hypotheses(ref: Bands, search: Bands,
                          hypotheses: list[tuple[float, float]],
                          k_per_hyp: int = 50,
-                         max_hypotheses: int = 6,
+                         max_hypotheses: int = 8,
                          search_freqs: np.ndarray | None = None,
-                         residual_weight: float = 0.75
+                         residual_weight: float = 0.75,
+                         n_refine: int = 3,
+                         coarse_ds: int = 2
                          ) -> tuple[list[Candidate], dict]:
     """Correlate under every (scale, rotation) hypothesis and pool the peaks.
 
@@ -261,8 +307,12 @@ def match_all_hypotheses(ref: Bands, search: Bands,
             print(f"[warn] periodic decomposition unavailable: {e}", file=sys.stderr)
             dec_s = None
 
+    # Two-stage: rank every hypothesis cheaply, refine only the survivors.
+    shortlist = [h for _, h in coarse_rank(ref, search, hypotheses[:max_hypotheses],
+                                           ds=coarse_ds)][:max(1, n_refine)]
+
     residual_ratio = 0.0
-    for (s, rot) in hypotheses[:max_hypotheses]:
+    for (s, rot) in shortlist:
         tpl = build_template(ref, s, rot)
         if tpl is None:
             continue
