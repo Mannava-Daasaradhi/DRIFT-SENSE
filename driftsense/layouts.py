@@ -28,7 +28,7 @@ SUPERSAMPLE = 4
 
 
 def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
-                 phase_x=0.0, phase_y=0.0, defects=None):
+                 phase_x=0.0, phase_y=0.0, defects=None, block=None):
     """Render a DRAM-style word-line/bit-line grid with a contact at every crossing.
 
     size: output canvas is size x size.
@@ -40,6 +40,8 @@ def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
     defects: optional list of (x, y, radius, sign) in OUTPUT pixels - bright
       (sign>0) or dark/missing-contact (sign<0) blobs that break perfect
       periodicity. See generate_dataset.py for how these are derived.
+    block: optional (x0, y0, x1, y1, value) in OUTPUT pixels - a periphery/
+      array-boundary region, see apply_block.
 
     Returns a float32 array in [0, 1], shape (size, size).
     """
@@ -68,13 +70,14 @@ def render_dram(size, pitch_x, pitch_y, line_width, contact_radius,
             xc += px
         yc += py
 
+    apply_block(img, block, scale=ss)
     _apply_defects(img, defects, scale=ss)
     img = cv2.resize(img, (size, size), interpolation=cv2.INTER_AREA)
     return np.clip(img, 0.0, 1.0)
 
 
 def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
-                   phase_x=0.0, defects=None):
+                   phase_x=0.0, defects=None, block=None):
     """Render a FinFET-style dense parallel-fin grid crossed by horizontal gate bars.
 
     size: output canvas is size x size.
@@ -84,7 +87,7 @@ def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
       y-axis unique even though the x-axis (fin pitch) is periodic.
     gate_width: gate bar thickness, in OUTPUT pixels.
     phase_x: fin phase offset, in OUTPUT pixels.
-    defects: see render_dram.
+    defects, block: see render_dram.
 
     Returns a float32 array in [0, 1], shape (size, size).
     """
@@ -106,6 +109,7 @@ def render_finfet(size, pitch_fin, fin_width, gate_ys, gate_width,
             cv2.rectangle(img, (0, round(gy_s - gw / 2)), (S - 1, round(gy_s + gw / 2)),
                           1.0, -1, cv2.LINE_AA)
 
+    apply_block(img, block, scale=ss)
     _apply_defects(img, defects, scale=ss)
     img = cv2.resize(img, (size, size), interpolation=cv2.INTER_AREA)
     return np.clip(img, 0.0, 1.0)
@@ -120,3 +124,19 @@ def _apply_defects(img, defects, scale=1):
         if -rs <= xs <= size + rs and -rs <= ys <= size + rs:
             color = 1.0 if sign > 0 else 0.0
             cv2.circle(img, (round(xs), round(ys)), rs, color, -1, cv2.LINE_AA)
+
+
+def apply_block(img, block, scale=1):
+    """Paint a solid rectangular non-periodic region - array boundary / periphery
+    block / dummy fill (TECH-SPEC.md S4.3). block = (x0, y0, x1, y1, value) in
+    OUTPUT (unscaled) coordinates; scale matches the internal supersample factor
+    used by render_dram/render_finfet. This is the PRIMARY disambiguation
+    signal in v0 - see generate_dataset.py's aperiodic_content_level knob.
+    """
+    if block is None:
+        return
+    x0, y0, x1, y1, value = block
+    size = img.shape[0]
+    pt0 = (max(0, round(x0 * scale)), max(0, round(y0 * scale)))
+    pt1 = (min(size - 1, round(x1 * scale)), min(size - 1, round(y1 * scale)))
+    cv2.rectangle(img, pt0, pt1, float(value), -1, cv2.LINE_AA)

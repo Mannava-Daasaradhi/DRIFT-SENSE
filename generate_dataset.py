@@ -28,6 +28,7 @@ from driftsense.sem_physics import sem_forward
 
 REF_SIZE = 1000
 SEARCH_SIZE = 1000
+ZERO_APERIODIC_PROB = 0.15
 
 
 def _rng_for(seed, pair_index, tag):
@@ -35,28 +36,62 @@ def _rng_for(seed, pair_index, tag):
     return np.random.default_rng([seed, pair_index, tag])
 
 
-def _make_defects(layout_rng, n_range=(3, 9), zero_prob=0.15):
-    """Random aperiodic blobs, in WORLD coordinates inside the reference window.
+def _make_aperiodic_content(layout_rng):
+    """Aperiodic content in WORLD coordinates inside the reference window,
+    driven by a single aperiodic_content_level knob (TECH-SPEC.md S4.3).
 
-    Placing these only within [0, REF_SIZE) x [0, REF_SIZE) - the exact
-    region the reference crop covers - and rendering them consistently
-    (scaled) into both reference and search is what breaks the otherwise
-    perfect lattice symmetry and makes the true location findable at all.
-    A zero-defect pair is a deliberately, genuinely degenerate case: no
-    algorithm can disambiguate it, which is required test-set content
-    (TECH-SPEC.md S4.3, ambiguity_class == "degenerate").
+    Two kinds, both placed only within [0, REF_SIZE) x [0, REF_SIZE) - the
+    exact region the reference crop covers - and rendered consistently
+    (scaled) into both reference and search:
+
+    - A periphery/array-boundary BLOCK: a solid rectangular region standing
+      in for TECH-SPEC's "array boundary", "periphery block" or "dummy
+      fill" content. This is the primary disambiguation signal - it must
+      survive being divided by magnification_ratio (~10x) and still be a
+      large, high-contrast feature in the search image. A handful of
+      sub-10-world-unit defect dots (v0's original approach) do NOT survive
+      that division: at m~10 they shrink to well under 1 search pixel and
+      contribute essentially nothing to correlation, which is exactly why
+      Member B's localizer - verified working correctly on an exaggerated
+      test case - could not disambiguate any of the original "unique"
+      pairs. See MEMBER-A-CHECKLIST.md A4.1.
+    - A few bigger defect blobs (missing/added contacts, particles) as
+      secondary texture, sized so each is still individually visible
+      post-scaling (>= ~1.5 search px radius at m~10).
+
+    level == 0 (with probability ZERO_APERIODIC_PROB) means NEITHER is
+    present - a deliberately, genuinely degenerate pair that no algorithm
+    can disambiguate, which is required test-set content.
+
+    Returns (level, block, defects, aperiodic_energy_fraction).
     """
-    if layout_rng.uniform() < zero_prob:
-        return []
-    n = layout_rng.integers(n_range[0], n_range[1] + 1)
+    if layout_rng.uniform() < ZERO_APERIODIC_PROB:
+        return 0.0, None, [], 0.0
+
+    level = layout_rng.uniform(0.15, 1.0)
+
+    block_frac = 0.30 * level
+    side = max(40.0, (block_frac ** 0.5) * REF_SIZE)
+    side = min(side, REF_SIZE * 0.9)
+    bx0 = layout_rng.uniform(0, REF_SIZE - side)
+    by0 = layout_rng.uniform(0, REF_SIZE - side)
+    value = float(layout_rng.choice([0.15, 0.85]))
+    block = (bx0, by0, bx0 + side, by0 + side, value)
+    block_area = side * side
+
+    n = int(layout_rng.integers(2, 6))
     defects = []
+    defect_area = 0.0
     for _ in range(n):
         wx = layout_rng.uniform(0, REF_SIZE)
         wy = layout_rng.uniform(0, REF_SIZE)
-        radius = layout_rng.uniform(3, 10)
+        radius = layout_rng.uniform(15, 35)
         sign = layout_rng.choice([-1, 1])
         defects.append((wx, wy, radius, sign))
-    return defects
+        defect_area += np.pi * radius * radius
+
+    fraction = min(1.0, (block_area + defect_area) / (REF_SIZE * REF_SIZE))
+    return level, block, defects, fraction
 
 
 def _placement(layout_rng, m):
@@ -119,8 +154,26 @@ def build_pair(style, pair_index, seed, noiseless=False):
     """
     layout_rng = _rng_for(seed, pair_index, 0)
     m = layout_rng.uniform(9.0, 11.0)
-    defects_world = _make_defects(layout_rng)
+    level, block_world, defects_world, aperiodic_fraction = _make_aperiodic_content(layout_rng)
     (sx, sy), search_origin_world = _placement(layout_rng, m)
+
+    def _defects_to(scale_origin=None):
+        if scale_origin is None:
+            return [(wx, wy, r, s) for wx, wy, r, s in defects_world]
+        ox, oy, div = scale_origin
+        return [((wx - ox) / div, (wy - oy) / div, max(1.0, r / div), s)
+                for wx, wy, r, s in defects_world]
+
+    def _block_to(scale_origin=None):
+        if block_world is None:
+            return None
+        x0, y0, x1, y1, value = block_world
+        if scale_origin is None:
+            return (x0, y0, x1, y1, value)
+        ox, oy, div = scale_origin
+        return ((x0 - ox) / div, (y0 - oy) / div, (x1 - ox) / div, (y1 - oy) / div, value)
+
+    search_scale_origin = (search_origin_world[0], search_origin_world[1], m)
 
     if style == "dram":
         pitch_x_ref = layout_rng.uniform(45, 90)
@@ -135,16 +188,13 @@ def build_pair(style, pair_index, seed, noiseless=False):
         phase_x_s = (phase_x_ref - search_origin_world[0]) / m
         phase_y_s = (phase_y_ref - search_origin_world[1]) / m
 
-        defects_ref = [(wx, wy, r, s) for wx, wy, r, s in defects_world]
-        defects_s = [((wx - search_origin_world[0]) / m,
-                      (wy - search_origin_world[1]) / m,
-                      max(1.0, r / m), s) for wx, wy, r, s in defects_world]
-
         ref_clean = render_dram(REF_SIZE, pitch_x_ref, pitch_y_ref, line_width_ref,
-                                 contact_radius_ref, phase_x_ref, phase_y_ref, defects_ref)
+                                 contact_radius_ref, phase_x_ref, phase_y_ref,
+                                 _defects_to(), _block_to())
         search_clean = render_dram(SEARCH_SIZE, pitch_x_s, pitch_y_s,
                                     max(1.0, line_width_ref / m), max(1.0, contact_radius_ref / m),
-                                    phase_x_s, phase_y_s, defects_s)
+                                    phase_x_s, phase_y_s,
+                                    _defects_to(search_scale_origin), _block_to(search_scale_origin))
         lattice_period_search_px = [pitch_x_s, pitch_y_s]
         sem_params = {
             "pitch_x_ref": pitch_x_ref, "pitch_y_ref": pitch_y_ref,
@@ -162,15 +212,11 @@ def build_pair(style, pair_index, seed, noiseless=False):
         phase_x_s = (phase_x_ref - search_origin_world[0]) / m
         gate_ys_s = [(gy - search_origin_world[1]) / m for gy in gate_ys_ref]
 
-        defects_ref = [(wx, wy, r, s) for wx, wy, r, s in defects_world]
-        defects_s = [((wx - search_origin_world[0]) / m,
-                      (wy - search_origin_world[1]) / m,
-                      max(1.0, r / m), s) for wx, wy, r, s in defects_world]
-
         ref_clean = render_finfet(REF_SIZE, pitch_fin_ref, fin_width_ref, gate_ys_ref,
-                                   gate_width_ref, phase_x_ref, defects_ref)
+                                   gate_width_ref, phase_x_ref, _defects_to(), _block_to())
         search_clean = render_finfet(SEARCH_SIZE, pitch_fin_s, max(1.0, fin_width_ref / m),
-                                      gate_ys_s, max(1.0, gate_width_ref / m), phase_x_s, defects_s)
+                                      gate_ys_s, max(1.0, gate_width_ref / m), phase_x_s,
+                                      _defects_to(search_scale_origin), _block_to(search_scale_origin))
         lattice_period_search_px = [pitch_fin_s, None]
         sem_params = {
             "pitch_fin_ref": pitch_fin_ref, "fin_width_ref": fin_width_ref,
@@ -184,6 +230,8 @@ def build_pair(style, pair_index, seed, noiseless=False):
     noise_std_ref = 0.02
     noise_std_search = 0.05
     sem_params.update({"noise_std_ref": noise_std_ref, "noise_std_search": noise_std_search,
+                        "aperiodic_content_level": round(float(level), 4),
+                        "aperiodic_energy_fraction": round(float(aperiodic_fraction), 5),
                         "v0_placeholder": True})
 
     if noiseless:
@@ -193,13 +241,23 @@ def build_pair(style, pair_index, seed, noiseless=False):
         ref_u8 = sem_forward(ref_clean, np.random.default_rng(seed_ref), noise_std_ref)
         search_u8 = sem_forward(search_clean, np.random.default_rng(seed_search), noise_std_search)
 
-    n_defects = len(defects_world)
-    if n_defects == 0:
+    # Objective criterion (TECH-SPEC.md S4.1), not a defect-count vibe: how much
+    # of the reference window's area is aperiodic content that survives the
+    # /m division into the search image. Thresholds set empirically against
+    # Member B's localizer - level 0 pairs are provably unsolvable, mid-range
+    # pairs are solvable but not trivially so, high-fraction pairs are clean.
+    if aperiodic_fraction <= 0.0:
         ambiguity_class = "degenerate"
-    elif n_defects <= 2:
+    elif aperiodic_fraction <= 0.06:
         ambiguity_class = "weakly_ambiguous"
     else:
         ambiguity_class = "unique"
+
+    aperiodic_content = []
+    if block_world is not None:
+        aperiodic_content.append("periphery_block")
+    if defects_world:
+        aperiodic_content.append("defect")
 
     meta = {
         "pair_id": f"{style}_{pair_index:05d}",
@@ -211,7 +269,7 @@ def build_pair(style, pair_index, seed, noiseless=False):
         "alias_positions": _alias_positions(style, (sx, sy), (lattice_period_search_px[0],
                             lattice_period_search_px[1] or lattice_period_search_px[0])),
         "ambiguity_class": ambiguity_class,
-        "aperiodic_content": ["defect"] if n_defects > 0 else [],
+        "aperiodic_content": aperiodic_content,
         "sem_params": sem_params,
         "seeds": {"reference": seed_ref, "search": seed_search},
     }

@@ -495,6 +495,7 @@
   ],
   "ambiguity_class": "unique",
   "aperiodic_content": [
+    "periphery_block",
     "defect"
   ],
   "sem_params": {
@@ -504,6 +505,8 @@
     "contact_radius_ref": 6.7321958129698185,
     "noise_std_ref": 0.02,
     "noise_std_search": 0.05,
+    "aperiodic_content_level": 0.8798,
+    "aperiodic_energy_fraction": 0.27467,
     "v0_placeholder": true
   },
   "seeds": {
