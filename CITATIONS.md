@@ -15,10 +15,10 @@ quoted in the slide deck until verified. Status legend:
 - ✅ Verified — opened, DOI confirmed resolving to the correct paper.
 - ⏳ Candidate — from TECH-SPEC.md S6's starting list, not yet personally opened.
 
-Progress: 4/10 stages have a verified reference as of Day 3 (A3.1). All ten
-forward-model stages are now implemented (`driftsense/sem_physics.py`).
-Full citation verification of every stage is still due by Gate 2 (A5.3, Aug
-11 EOD per PLAN.md) - this file is a **living document**.
+Progress: 7/10 stages have a verified reference. All ten forward-model
+stages are now implemented (`driftsense/sem_physics.py`). Full citation
+verification of every stage is still due by Gate 2 (A5.3, Aug 11 EOD per
+PLAN.md) - this file is a **living document**.
 
 ---
 
@@ -43,13 +43,18 @@ DRIFT-SENSE generates rather than sources its dataset.
 
 ### 1. Geometry — analytic layout at supersample, material ID map
 ⏳ Itoh, K. *VLSI Memory Chip Design*, Springer, 2001 (DRAM array pitch/geometry).
-⏳ Hisamoto, D. et al. "FinFET - a self-aligned double-gate MOSFET scalable
-to 20 nm." *IEEE Trans. Electron Devices* 47(12), 2320-2325, 2000 (FinFET fin/gate geometry).
+✅ **Verified** — Hisamoto, D., Lee, W.C., Kedzierski, J. et al. "FinFET - a
+self-aligned double-gate MOSFET scalable to 20 nm." *IEEE Trans. Electron
+Devices* 47(12), 2320-2325, 2000. DOI:
+[10.1109/16.887014](https://doi.org/10.1109/16.887014). Opened Aug 9, 2026
+- DOI redirects to the correct IEEE Xplore record; independently
+corroborated via Semantic Scholar and ResearchGate.
 
 Models: the actual repeating unit-cell geometry (word-line/bit-line pitch
 for DRAM, fin/gate pitch for FinFET) that the rest of the forward model
-images. Not yet personally verified - queued for A2.1/A2.2 when the real
-(non-crude) layout parameters are drawn from literature pitch figures.
+images. `driftsense/layouts.py`'s FinFET pitch/gate-count ranges are still
+generic placeholders, not drawn from this paper's specific figures - the
+Itoh DRAM citation is likewise still unverified pending that pass.
 
 ### 2. Edge distance / signed distance to material boundary
 No separate citation - this is a standard image-processing primitive
@@ -57,12 +62,18 @@ No separate citation - this is a standard image-processing primitive
 feed stage 3's edge-brightening term.
 
 ### 3. SE yield with edge brightening ⚠️ mandatory augmentation (brief names it explicitly)
-⏳ Reimer, L. *Scanning Electron Microscopy: Physics of Image Formation and
-Microanalysis*, 2nd ed., Springer, 1998 (SE yield, edge effect).
+✅ **Verified** — Reimer, L. *Scanning Electron Microscopy: Physics of Image
+Formation and Microanalysis*, 2nd ed., Springer Series in Optical Sciences
+45, 1998. DOI: [10.1007/978-3-540-38967-5](https://doi.org/10.1007/978-3-540-38967-5)
+(SE yield, edge effect). Opened Aug 9, 2026 - DOI redirects to the correct
+Springer record; independently corroborated via ResearchGate and the
+German National Library catalogue.
+✅ **Verified** — Seiler, H. "Secondary electron emission in the scanning
+electron microscope." *J. Appl. Phys.* 54(11), R1-R18, 1983. DOI:
+[10.1063/1.332840](https://doi.org/10.1063/1.332840). Opened Aug 9, 2026 -
+DOI redirects to the correct AIP Publishing record.
 ⏳ Goldstein, J. et al. *Scanning Electron Microscopy and X-Ray
 Microanalysis*, 4th ed., Springer, 2018 (edge/topographic contrast).
-⏳ Seiler, H. "Secondary electron emission in the scanning electron
-microscope." *J. Appl. Phys.* 54(11), R1-R18, 1983.
 
 Models: secondary-electron yield rises near a topographic edge because more
 of the interaction volume is within escape depth of a surface, producing
@@ -80,7 +91,7 @@ between independently-rendered reference/search resolutions (see
 `tools/check_gt.py`'s module docstring for the diagnosis).
 
 ### 5. Beam PSF — Gaussian core + Lorentzian skirt
-⏳ Reimer 1998 (as above) - beam broadening and interaction volume.
+✅ Reimer 1998 (as above, stage 3) - beam broadening and interaction volume.
 ⏳ Joy, D.C. *Monte Carlo Modeling for Electron Microscopy and
 Microanalysis*, Oxford, 1995 (beam-sample interaction, scattering).
 
@@ -183,8 +194,11 @@ still ⏳ open, to be selected and verified before Gate 2.
 
 ## Open items before this file is frozen (A5.3, due Aug 11 EOD)
 
-- [ ] Personally verify all remaining ⏳ candidates above (stages 1, 3, 5, 9's
-      Rose 1973, 10's detector-chain reference), or replace them.
+- [ ] Personally verify: Itoh 2001 (DRAM geometry, stage 1), Goldstein 2018
+      (stage 3), Joy 1995 (stage 5), Rose 1973 (stage 9 - found the book and
+      a chapter PDF but it sits behind institutional auth I can't clear, so
+      still unverified rather than falsely marked done), stage 10's
+      detector-chain reference.
 - [x] ~~Find and verify a specific Cazaux charging paper~~ - done, stage 7.
 - [ ] Select and verify a reciprocal-lattice/crystallography citation for
       the periodic/aperiodic decomposition (Moisan 2011 trap, above).
