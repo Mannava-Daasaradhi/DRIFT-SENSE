@@ -3,12 +3,12 @@
     "n_pairs": 30,
     "data_dir": "data/ood",
     "reranker_enabled": false,
-    "median_error_px": 1.7238351758681238,
-    "mean_error_px": 70.60765560345477,
+    "median_error_px": 1.7238341633098409,
+    "mean_error_px": 70.7947909994171,
     "median_error_px_baseline": 5.000739509644326,
-    "mean_error_px_baseline": 142.47960867443095,
-    "time_ms_median": 594.2273999971803,
-    "time_ms_worst": 626.070800004527,
+    "mean_error_px_baseline": 144.37616046487526,
+    "time_ms_median": 393.7927499991929,
+    "time_ms_worst": 443.3228749985574,
     "accuracy": {
       "1": 16.666666666666668,
       "2": 60.0,
@@ -65,9 +65,9 @@
       "unique": 19,
       "low_confidence_best": 11
     },
-    "scale_error_pct_median": 0.3758577053196113,
+    "scale_error_pct_median": 0.37585741809160256,
     "scale_within_2pct": 29,
-    "expected_calibration_error": 0.0779895354557755,
+    "expected_calibration_error": 0.07847147660478182,
     "success_case": "finfet_00011",
     "failure_case": "dram_00002"
   },
@@ -76,17 +76,17 @@
       "pair_id": "dram_00000",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 56.00177913717253,
+      "err": 56.001778415628614,
       "err_baseline": 0.9374561323069993,
       "confidence": 0.5333,
-      "pai": 0.9148324757254265,
+      "pai": 0.914832377580883,
       "decision": "unique",
-      "time_ms": 626.070800004527,
-      "time_ms_baseline": 36.943199986126274,
-      "scale": 11.377637340664533,
+      "time_ms": 393.18241700311773,
+      "time_ms_baseline": 26.566042000922607,
+      "scale": 11.377637350556808,
       "scale_true": 11.3792,
-      "scale_err_pct": 0.013732593991386405,
-      "rotation": 176.3394942211571,
+      "scale_err_pct": 0.013732507058425889,
+      "rotation": 176.33949417280473,
       "rotation_true": -3.4281,
       "alias_hit": false,
       "n_candidates": 32,
@@ -95,30 +95,30 @@
         468.882
       ],
       "pred_xy": [
-        104.7332375049591,
-        437.91844832897186
+        104.73323839902878,
+        437.91845098137856
       ],
       "pred_xy_baseline": [
         59.0,
         469.0
       ],
-      "dir": "data/ood\\dram_00000"
+      "dir": "data/ood/dram_00000"
     },
     {
       "pair_id": "dram_00002",
       "style": "dram",
       "ambiguity_class": "degenerate",
-      "err": 189.54175005170634,
-      "err_baseline": 69.24049087058815,
+      "err": 195.18391890336335,
+      "err_baseline": 130.7361831169933,
       "confidence": 0.5333,
-      "pai": 0.9955887671225427,
+      "pai": 0.9972208563803944,
       "decision": "low_confidence_best",
-      "time_ms": 623.6349000246264,
-      "time_ms_baseline": 36.67689999565482,
-      "scale": 10.147300712638161,
+      "time_ms": 398.1107500003418,
+      "time_ms_baseline": 25.658708000264596,
+      "scale": 10.14583376029474,
       "scale_true": 10.1353,
-      "scale_err_pct": 0.11840510530680387,
-      "rotation": -179.77396801279957,
+      "scale_err_pct": 0.10393141095714714,
+      "rotation": 0.22994293909096086,
       "rotation_true": 0.7209,
       "alias_hit": false,
       "n_candidates": 32,
@@ -127,30 +127,30 @@
         355.23
       ],
       "pred_xy": [
-        106.54739491641521,
-        300.5345622599125
+        315.44881292432547,
+        548.4779017474502
       ],
       "pred_xy_baseline": [
-        327.0,
-        298.0
+        170.0,
+        299.0
       ],
-      "dir": "data/ood\\dram_00002"
+      "dir": "data/ood/dram_00002"
     },
     {
       "pair_id": "dram_00004",
       "style": "dram",
       "ambiguity_class": "degenerate",
-      "err": 432.45341472328,
+      "err": 432.45341588332826,
       "err_baseline": 417.40840825263695,
       "confidence": 0.5333,
-      "pai": 0.9845309269869511,
+      "pai": 0.9845301126027347,
       "decision": "low_confidence_best",
-      "time_ms": 603.2092999666929,
-      "time_ms_baseline": 36.01779998280108,
-      "scale": 11.55079146913122,
+      "time_ms": 374.9132090015337,
+      "time_ms_baseline": 26.377292000688612,
+      "scale": 11.550793217415686,
       "scale_true": 11.5917,
-      "scale_err_pct": 0.35291226367814893,
-      "rotation": 178.35666363686516,
+      "scale_err_pct": 0.3528971814687532,
+      "rotation": 178.35665897801243,
       "rotation_true": -1.2807,
       "alias_hit": false,
       "n_candidates": 32,
@@ -159,30 +159,30 @@
         430.876
       ],
       "pred_xy": [
-        624.4892752123997,
-        831.4988587999251
+        624.4892720216885,
+        831.4988613490714
       ],
       "pred_xy_baseline": [
         107.0,
         651.0
       ],
-      "dir": "data/ood\\dram_00004"
+      "dir": "data/ood/dram_00004"
     },
     {
       "pair_id": "dram_00006",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.8782675278781904,
-      "err_baseline": 5.24224875411309,
+      "err": 1.8782654302168325,
+      "err_baseline": 5.242248754113089,
       "confidence": 0.5333,
-      "pai": 0.9778835742171643,
+      "pai": 0.9778890744762984,
       "decision": "low_confidence_best",
-      "time_ms": 596.392499981448,
-      "time_ms_baseline": 34.499800007324666,
-      "scale": 10.083327243199143,
+      "time_ms": 416.4926670018758,
+      "time_ms_baseline": 25.772124998184154,
+      "scale": 10.083326935957196,
       "scale_true": 10.0563,
-      "scale_err_pct": 0.268759317036514,
-      "rotation": 4.197732520847438,
+      "scale_err_pct": 0.2687562618179203,
+      "rotation": 4.197730238442858,
       "rotation_true": 4.0863,
       "alias_hit": false,
       "n_candidates": 32,
@@ -191,30 +191,30 @@
         125.354
       ],
       "pred_xy": [
-        419.9270696043968,
-        124.6898580789566
+        419.9270727932453,
+        124.68985557556152
       ],
       "pred_xy_baseline": [
         417.0,
         123.0
       ],
-      "dir": "data/ood\\dram_00006"
+      "dir": "data/ood/dram_00006"
     },
     {
       "pair_id": "dram_00008",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.3712681886102285,
+      "err": 1.3700689224499207,
       "err_baseline": 5.82759169812025,
-      "confidence": 0.7058580890805717,
-      "pai": 0.6355348908362187,
+      "confidence": 0.7064317904070284,
+      "pai": 0.6353014940716721,
       "decision": "unique",
-      "time_ms": 603.2233000150882,
-      "time_ms_baseline": 37.15829999418929,
-      "scale": 8.380401422403192,
+      "time_ms": 403.76054199805367,
+      "time_ms_baseline": 26.26537499963888,
+      "scale": 8.38040156525925,
       "scale_true": 8.3448,
-      "scale_err_pct": 0.42663002592264754,
-      "rotation": -1.7745645924662767,
+      "scale_err_pct": 0.42663173783974134,
+      "rotation": -1.7745642725420794,
       "rotation_true": -1.5946,
       "alias_hit": false,
       "n_candidates": 32,
@@ -223,30 +223,30 @@
         199.252
       ],
       "pred_xy": [
-        328.1050375401974,
-        198.67515769600868
+        328.1035021841526,
+        198.67469836771488
       ],
       "pred_xy_baseline": [
         332.0,
         202.0
       ],
-      "dir": "data/ood\\dram_00008"
+      "dir": "data/ood/dram_00008"
     },
     {
       "pair_id": "dram_00010",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.4653396506598064,
+      "err": 1.4651220079727036,
       "err_baseline": 4.825607112063789,
       "confidence": 0.92,
-      "pai": 0.4398465264719778,
+      "pai": 0.43982106375038743,
       "decision": "unique",
-      "time_ms": 617.5766000524163,
-      "time_ms_baseline": 30.370899999979883,
-      "scale": 11.574357321986747,
+      "time_ms": 385.86020799994003,
+      "time_ms_baseline": 26.71025000017835,
+      "scale": 11.57433305007765,
       "scale_true": 11.6234,
-      "scale_err_pct": 0.42193057120337146,
-      "rotation": 2.7982866030141054,
+      "scale_err_pct": 0.42213939055999444,
+      "rotation": 2.7982751158992016,
       "rotation_true": 3.0186,
       "alias_hit": false,
       "n_candidates": 32,
@@ -255,30 +255,30 @@
         755.05
       ],
       "pred_xy": [
-        914.4429733455181,
-        755.8691825568676
+        914.4426729679108,
+        755.8692387193441
       ],
       "pred_xy_baseline": [
         916.0,
         759.0
       ],
-      "dir": "data/ood\\dram_00010"
+      "dir": "data/ood/dram_00010"
     },
     {
       "pair_id": "dram_00012",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.5269028256071286,
+      "err": 1.5133665238042064,
       "err_baseline": 4.701686718614925,
-      "confidence": 0.7356779016279795,
-      "pai": 0.6298933207409109,
+      "confidence": 0.742651879502875,
+      "pai": 0.6257568289669406,
       "decision": "unique",
-      "time_ms": 608.0781000200659,
-      "time_ms_baseline": 31.41870000399649,
-      "scale": 11.203392345050041,
+      "time_ms": 375.6605420021515,
+      "time_ms_baseline": 27.42454200051725,
+      "scale": 11.19962343895777,
       "scale_true": 11.2539,
-      "scale_err_pct": 0.44880134842106995,
-      "rotation": -3.373974786425407,
+      "scale_err_pct": 0.4822911261183175,
+      "rotation": -3.745230667641408,
       "rotation_true": -3.5732,
       "alias_hit": false,
       "n_candidates": 32,
@@ -287,30 +287,30 @@
         689.457
       ],
       "pred_xy": [
-        464.0790258497,
-        688.9058830812573
+        464.08580938726664,
+        688.9261054694653
       ],
       "pred_xy_baseline": [
         467.0,
         685.0
       ],
-      "dir": "data/ood\\dram_00012"
+      "dir": "data/ood/dram_00012"
     },
     {
       "pair_id": "dram_00014",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 2.360610559623275,
+      "err": 2.3605846032681734,
       "err_baseline": 2.0230958949095936,
       "confidence": 0.92,
-      "pai": 0.27205492557303346,
+      "pai": 0.27207294264819076,
       "decision": "unique",
-      "time_ms": 613.5399999911897,
-      "time_ms_baseline": 36.75119997933507,
-      "scale": 9.887587522922674,
+      "time_ms": 387.98470799883944,
+      "time_ms_baseline": 26.18583299772581,
+      "scale": 9.88758588533898,
       "scale_true": 9.8096,
-      "scale_err_pct": 0.795012262708717,
-      "rotation": -2.1788925477223415,
+      "scale_err_pct": 0.7949955690240252,
+      "rotation": -2.1788639478543814,
       "rotation_true": -2.1153,
       "alias_hit": false,
       "n_candidates": 32,
@@ -319,30 +319,30 @@
         781.639
       ],
       "pred_xy": [
-        213.83702984452248,
-        780.4225163534284
+        213.83698996901512,
+        780.4225004091859
       ],
       "pred_xy_baseline": [
         213.0,
         780.0
       ],
-      "dir": "data/ood\\dram_00014"
+      "dir": "data/ood/dram_00014"
     },
     {
       "pair_id": "dram_00016",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.8329457889008003,
-      "err_baseline": 64.13832405824147,
+      "err": 1.8363454255705918,
+      "err_baseline": 59.539185525164825,
       "confidence": 0.5333,
-      "pai": 0.9416177474753368,
+      "pai": 0.9555542703548255,
       "decision": "low_confidence_best",
-      "time_ms": 592.4350999994203,
-      "time_ms_baseline": 34.5083000138402,
-      "scale": 10.862657505591319,
+      "time_ms": 380.6004590005614,
+      "time_ms_baseline": 26.041875000373693,
+      "scale": 10.862658680098814,
       "scale_true": 10.8847,
-      "scale_err_pct": 0.20250897506299564,
-      "rotation": 5.362743211354285,
+      "scale_err_pct": 0.20249818461864988,
+      "rotation": 5.362748334291041,
       "rotation_true": 5.5385,
       "alias_hit": false,
       "n_candidates": 32,
@@ -351,30 +351,30 @@
         836.167
       ],
       "pred_xy": [
-        576.3840441182256,
-        837.9892249405384
+        576.3844131082296,
+        837.9926845133305
       ],
       "pred_xy_baseline": [
-        535.0,
-        885.0
+        544.0,
+        886.0
       ],
-      "dir": "data/ood\\dram_00016"
+      "dir": "data/ood/dram_00016"
     },
     {
       "pair_id": "dram_00018",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 0.47131478307286795,
+      "err": 0.4713142496808956,
       "err_baseline": 605.5166206348096,
       "confidence": 0.5333,
-      "pai": 0.8555042236560987,
+      "pai": 0.8555041659408981,
       "decision": "unique",
-      "time_ms": 593.9284000196494,
-      "time_ms_baseline": 33.01699995063245,
-      "scale": 9.508015692772682,
+      "time_ms": 398.5715419985354,
+      "time_ms_baseline": 26.414457999635488,
+      "scale": 9.508015094213798,
       "scale_true": 9.5469,
-      "scale_err_pct": 0.40729773253431595,
-      "rotation": 5.186719847719672,
+      "scale_err_pct": 0.40730400220179164,
+      "rotation": 5.186719264213252,
       "rotation_true": 5.6088,
       "alias_hit": false,
       "n_candidates": 32,
@@ -383,30 +383,30 @@
         506.573
       ],
       "pred_xy": [
-        319.42673222720623,
-        506.13855028152466
+        319.42673191428185,
+        506.1385507285595
       ],
       "pred_xy_baseline": [
         748.0,
         79.0
       ],
-      "dir": "data/ood\\dram_00018"
+      "dir": "data/ood/dram_00018"
     },
     {
       "pair_id": "dram_00020",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.3212163703287856,
+      "err": 1.3212181016681714,
       "err_baseline": 5.175871907224862,
       "confidence": 0.92,
-      "pai": 0.5093733181296882,
+      "pai": 0.5093715316015024,
       "decision": "unique",
-      "time_ms": 589.1310999868438,
-      "time_ms_baseline": 37.36370004480705,
-      "scale": 12.083042894636634,
+      "time_ms": 393.9445829964825,
+      "time_ms_baseline": 26.726457999757258,
+      "scale": 12.083043941358245,
       "scale_true": 12.1008,
-      "scale_err_pct": 0.14674323485526256,
-      "rotation": 2.2642941845333837,
+      "scale_err_pct": 0.14673458483534058,
+      "rotation": 2.26429915983411,
       "rotation_true": 2.2501,
       "alias_hit": false,
       "n_candidates": 32,
@@ -415,30 +415,30 @@
         746.095
       ],
       "pred_xy": [
-        609.2562464773655,
-        744.7762840688229
+        609.2562417387962,
+        744.7762820422649
       ],
       "pred_xy_baseline": [
         604.0,
         746.0
       ],
-      "dir": "data/ood\\dram_00020"
+      "dir": "data/ood/dram_00020"
     },
     {
       "pair_id": "dram_00022",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.1803980329273251,
+      "err": 1.1809297908478988,
       "err_baseline": 5.920245349645586,
       "confidence": 0.92,
-      "pai": 0.5388529743224157,
+      "pai": 0.5393583329854686,
       "decision": "unique",
-      "time_ms": 588.9008000376634,
-      "time_ms_baseline": 31.11049998551607,
-      "scale": 9.04791324337232,
+      "time_ms": 362.94345799979055,
+      "time_ms_baseline": 26.67262500108336,
+      "scale": 9.047911175338164,
       "scale_true": 9.1253,
-      "scale_err_pct": 0.8480461642650485,
-      "rotation": 5.3783425875857915,
+      "scale_err_pct": 0.8480688269079902,
+      "rotation": 5.378330417381989,
       "rotation_true": 5.4587,
       "alias_hit": false,
       "n_candidates": 32,
@@ -447,30 +447,30 @@
         708.509
       ],
       "pred_xy": [
-        596.1471119225025,
-        709.1015597432852
+        596.1467083543539,
+        709.1019237264991
       ],
       "pred_xy_baseline": [
         595.0,
         703.0
       ],
-      "dir": "data/ood\\dram_00022"
+      "dir": "data/ood/dram_00022"
     },
     {
       "pair_id": "dram_00024",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 2.35915032301424,
+      "err": 2.359148989881232,
       "err_baseline": 4.5115613705234745,
       "confidence": 0.5333,
-      "pai": 0.7413220274883038,
+      "pai": 0.7413215810302389,
       "decision": "unique",
-      "time_ms": 598.828699963633,
-      "time_ms_baseline": 33.0118999700062,
-      "scale": 12.733146832381141,
+      "time_ms": 378.28224999975646,
+      "time_ms_baseline": 26.92591699815239,
+      "scale": 12.733146815640394,
       "scale_true": 12.7281,
-      "scale_err_pct": 0.039651105672817606,
-      "rotation": -0.6384410239721774,
+      "scale_err_pct": 0.039650974146922494,
+      "rotation": -0.6384380988266685,
       "rotation_true": -0.8068,
       "alias_hit": false,
       "n_candidates": 32,
@@ -479,30 +479,30 @@
         549.295
       ],
       "pred_xy": [
-        70.04912990704179,
-        551.5842877328396
+        70.04912979900837,
+        551.5842863321304
       ],
       "pred_xy_baseline": [
         72.0,
         545.0
       ],
-      "dir": "data/ood\\dram_00024"
+      "dir": "data/ood/dram_00024"
     },
     {
       "pair_id": "dram_00026",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 0.2643472312606893,
+      "err": 0.26434351753038393,
       "err_baseline": 2.6251500909471717,
-      "confidence": 0.7227645495563328,
-      "pai": 0.7475946705948633,
+      "confidence": 0.7229603458261726,
+      "pai": 0.7474908012587506,
       "decision": "unique",
-      "time_ms": 602.958099974785,
-      "time_ms_baseline": 35.27749999193475,
-      "scale": 9.499745372030942,
+      "time_ms": 408.9764999989711,
+      "time_ms_baseline": 28.351749999274034,
+      "scale": 9.499747054999768,
       "scale_true": 9.4784,
-      "scale_err_pct": 0.22520016069105894,
-      "rotation": 3.783319887396317,
+      "scale_err_pct": 0.22521791652353734,
+      "rotation": 3.78330984571312,
       "rotation_true": 3.7203,
       "alias_hit": false,
       "n_candidates": 32,
@@ -511,30 +511,30 @@
         593.502
       ],
       "pred_xy": [
-        608.413283213973,
-        593.5481747463346
+        608.4132796451449,
+        593.5481736026704
       ],
       "pred_xy_baseline": [
         606.0,
         592.0
       ],
-      "dir": "data/ood\\dram_00026"
+      "dir": "data/ood/dram_00026"
     },
     {
       "pair_id": "dram_00028",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.2019451624203823,
+      "err": 1.2019491564467855,
       "err_baseline": 2.3533066098577162,
       "confidence": 0.5333,
-      "pai": 0.7155658763776226,
+      "pai": 0.7155688324324714,
       "decision": "unique",
-      "time_ms": 558.8483999599703,
-      "time_ms_baseline": 32.580899947788566,
-      "scale": 11.92696258623364,
+      "time_ms": 364.11229100122,
+      "time_ms_baseline": 26.338750001741573,
+      "scale": 11.926960939086136,
       "scale_true": 11.9258,
-      "scale_err_pct": 0.009748496818999008,
-      "rotation": 3.71473437376207,
+      "scale_err_pct": 0.00973468518787478,
+      "rotation": 3.714743731344754,
       "rotation_true": 3.9835,
       "alias_hit": false,
       "n_candidates": 32,
@@ -543,30 +543,30 @@
         437.394
       ],
       "pred_xy": [
-        83.1058928668499,
-        436.19205632805824
+        83.10587418079376,
+        436.1920523047447
       ],
       "pred_xy_baseline": [
         85.0,
         436.0
       ],
-      "dir": "data/ood\\dram_00028"
+      "dir": "data/ood/dram_00028"
     },
     {
       "pair_id": "finfet_00001",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 3.168097563516931,
+      "err": 3.167789294081586,
       "err_baseline": 2.8344921943797927,
       "confidence": 0.92,
-      "pai": 0.43733038299689975,
+      "pai": 0.4375534916092243,
       "decision": "unique",
-      "time_ms": 586.8689999915659,
-      "time_ms_baseline": 30.07340000476688,
-      "scale": 8.376123340744302,
+      "time_ms": 369.44724999921164,
+      "time_ms_baseline": 26.3554999983171,
+      "scale": 8.376123182639203,
       "scale_true": 8.4592,
-      "scale_err_pct": 0.9820864769209535,
-      "rotation": -4.734931211067163,
+      "scale_err_pct": 0.9820883459522898,
+      "rotation": -4.734924554147682,
       "rotation_true": -4.958,
       "alias_hit": false,
       "n_candidates": 32,
@@ -575,30 +575,30 @@
         453.685
       ],
       "pred_xy": [
-        109.19555348157883,
-        451.49937760829926
+        109.19559881091118,
+        451.4997768998146
       ],
       "pred_xy_baseline": [
         114.0,
         455.0
       ],
-      "dir": "data/ood\\finfet_00001"
+      "dir": "data/ood/finfet_00001"
     },
     {
       "pair_id": "finfet_00003",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.041966246044471,
+      "err": 1.0419666191281136,
       "err_baseline": 522.709244572927,
       "confidence": 0.92,
-      "pai": 0.42036686095484144,
+      "pai": 0.4203666664877641,
       "decision": "unique",
-      "time_ms": 569.3376999697648,
-      "time_ms_baseline": 33.24319998500869,
-      "scale": 12.067402712797525,
+      "time_ms": 412.958749999234,
+      "time_ms_baseline": 25.615541002480313,
+      "scale": 12.067402712972326,
       "scale_true": 12.1602,
-      "scale_err_pct": 0.7631230341809696,
-      "rotation": 3.20875528231349,
+      "scale_err_pct": 0.7631230327434881,
+      "rotation": 3.2087552418588245,
       "rotation_true": 4.3814,
       "alias_hit": false,
       "n_candidates": 32,
@@ -607,30 +607,30 @@
         361.331
       ],
       "pred_xy": [
-        354.845617800951,
+        354.8456174135208,
         361.05007684230804
       ],
       "pred_xy_baseline": [
         877.0,
         321.0
       ],
-      "dir": "data/ood\\finfet_00003"
+      "dir": "data/ood/finfet_00003"
     },
     {
       "pair_id": "finfet_00005",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.2361424329618567,
+      "err": 1.2361444389895437,
       "err_baseline": 1.8592670598921675,
       "confidence": 0.5333,
-      "pai": 0.6340681214755189,
+      "pai": 0.6340681392166162,
       "decision": "unique",
-      "time_ms": 602.7824000339024,
-      "time_ms_baseline": 30.58349998900667,
-      "scale": 10.683439365443364,
+      "time_ms": 428.30899999898975,
+      "time_ms_baseline": 28.60270800010767,
+      "scale": 10.683439366545697,
       "scale_true": 10.6422,
-      "scale_err_pct": 0.3875078972708988,
-      "rotation": -1.138313960231585,
+      "scale_err_pct": 0.38750790762902443,
+      "rotation": -1.1383139567198555,
       "rotation_true": -1.8466,
       "alias_hit": false,
       "n_candidates": 32,
@@ -639,30 +639,30 @@
         481.325
       ],
       "pred_xy": [
-        744.234300673008,
-        482.42047414183617
+        744.2343007326126,
+        482.420476436615
       ],
       "pred_xy_baseline": [
         744.0,
         483.0
       ],
-      "dir": "data/ood\\finfet_00005"
+      "dir": "data/ood/finfet_00005"
     },
     {
       "pair_id": "finfet_00007",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.7052463623014271,
+      "err": 1.7052444682183914,
       "err_baseline": 6.8618549241440725,
       "confidence": 0.5333,
-      "pai": 0.7515492697061065,
+      "pai": 0.7515492369184981,
       "decision": "unique",
-      "time_ms": 594.5263999747112,
-      "time_ms_baseline": 32.231399964075536,
-      "scale": 12.352646479621242,
+      "time_ms": 383.82587500018417,
+      "time_ms_baseline": 26.232166001136648,
+      "scale": 12.35264647969519,
       "scale_true": 12.2938,
-      "scale_err_pct": 0.47866794336367213,
-      "rotation": 5.21986646232412,
+      "scale_err_pct": 0.4786679439651782,
+      "rotation": 5.219866443813572,
       "rotation_true": -0.606,
       "alias_hit": false,
       "n_candidates": 32,
@@ -671,30 +671,30 @@
         613.677
       ],
       "pred_xy": [
-        695.9284318387508,
-        612.1019718050957
+        695.9284322559834,
+        612.101973682642
       ],
       "pred_xy_baseline": [
         695.0,
         607.0
       ],
-      "dir": "data/ood\\finfet_00007"
+      "dir": "data/ood/finfet_00007"
     },
     {
       "pair_id": "finfet_00009",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 85.54163764313257,
+      "err": 85.54163922166094,
       "err_baseline": 683.6288188871209,
       "confidence": 0.5333,
-      "pai": 0.9754400027931975,
+      "pai": 0.9754401906546829,
       "decision": "low_confidence_best",
-      "time_ms": 615.0963000254706,
-      "time_ms_baseline": 38.1805999786593,
-      "scale": 9.716203667993955,
+      "time_ms": 406.0540420032339,
+      "time_ms_baseline": 26.22483400045894,
+      "scale": 9.716203660896289,
       "scale_true": 9.786,
-      "scale_err_pct": 0.7132263642555098,
-      "rotation": 175.7023138477805,
+      "scale_err_pct": 0.7132264367842902,
+      "rotation": 175.7023139864367,
       "rotation_true": -4.1463,
       "alias_hit": false,
       "n_candidates": 32,
@@ -703,30 +703,30 @@
         104.603
       ],
       "pred_xy": [
-        823.0459919795394,
-        59.29298487305641
+        823.0459920540452,
+        59.29298177361488
       ],
       "pred_xy_baseline": [
         214.0,
         52.0
       ],
-      "dir": "data/ood\\finfet_00009"
+      "dir": "data/ood/finfet_00009"
     },
     {
       "pair_id": "finfet_00011",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 0.22205983673316962,
+      "err": 0.2221114989181454,
       "err_baseline": 1.6488207907471302,
       "confidence": 0.92,
-      "pai": 0.286422847715591,
+      "pai": 0.28639887736285186,
       "decision": "unique",
-      "time_ms": 593.1639000191353,
-      "time_ms_baseline": 31.90360002918169,
-      "scale": 10.445247619886043,
+      "time_ms": 394.84737499878975,
+      "time_ms_baseline": 27.138166999066016,
+      "scale": 10.445267111605055,
       "scale_true": 10.6544,
-      "scale_err_pct": 1.9630610838147398,
-      "rotation": -5.634366500191305,
+      "scale_err_pct": 1.96287813856196,
+      "rotation": -5.634262335324308,
       "rotation_true": -5.1326,
       "alias_hit": false,
       "n_candidates": 32,
@@ -735,26 +735,26 @@
         439.669
       ],
       "pred_xy": [
-        463.72746762633324,
-        439.6955442428589
+        463.72752034664154,
+        439.6955385506153
       ],
       "pred_xy_baseline": [
         462.0,
         439.0
       ],
-      "dir": "data/ood\\finfet_00011"
+      "dir": "data/ood/finfet_00011"
     },
     {
       "pair_id": "finfet_00013",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.7424239894348208,
+      "err": 1.7424238584012905,
       "err_baseline": 2.144501107484011,
       "confidence": 0.5333,
-      "pai": 0.9610306606978959,
+      "pai": 0.9610304650154493,
       "decision": "low_confidence_best",
-      "time_ms": 588.4144000010565,
-      "time_ms_baseline": 31.629699980840087,
+      "time_ms": 397.35766599915223,
+      "time_ms_baseline": 25.809416998527013,
       "scale": 9.94216651808197,
       "scale_true": 9.9561,
       "scale_err_pct": 0.13994919615139254,
@@ -767,30 +767,30 @@
         808.337
       ],
       "pred_xy": [
-        742.99938163365,
-        809.4344513714314
+        742.9993816341157,
+        809.4344511628151
       ],
       "pred_xy_baseline": [
         743.0,
         810.0
       ],
-      "dir": "data/ood\\finfet_00013"
+      "dir": "data/ood/finfet_00013"
     },
     {
       "pair_id": "finfet_00015",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 0.5571494568066746,
-      "err_baseline": 1.142167238192363,
+      "err": 0.5571495021798039,
+      "err_baseline": 1.1421672381923633,
       "confidence": 0.5333,
-      "pai": 0.7900864551536665,
+      "pai": 0.7900863098793454,
       "decision": "unique",
-      "time_ms": 621.8521000118926,
-      "time_ms_baseline": 37.7598000341095,
-      "scale": 10.34878147811887,
+      "time_ms": 386.1230410002463,
+      "time_ms_baseline": 28.071832999557955,
+      "scale": 10.348781477025295,
       "scale_true": 10.4,
-      "scale_err_pct": 0.49248578731856485,
-      "rotation": 0.8019103356050437,
+      "scale_err_pct": 0.49248579783370916,
+      "rotation": 0.8019103345907297,
       "rotation_true": 1.1839,
       "alias_hit": false,
       "n_candidates": 32,
@@ -799,30 +799,30 @@
         895.889
       ],
       "pred_xy": [
-        680.26505869627,
-        895.5897163748741
+        680.2650581300259,
+        895.5897171795368
       ],
       "pred_xy_baseline": [
         681.0,
         897.0
       ],
-      "dir": "data/ood\\finfet_00015"
+      "dir": "data/ood/finfet_00015"
     },
     {
       "pair_id": "finfet_00017",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 99.07000327754663,
+      "err": 99.07000349179299,
       "err_baseline": 746.20721011325,
       "confidence": 0.5333,
-      "pai": 0.995738561461914,
+      "pai": 0.9957407315524257,
       "decision": "low_confidence_best",
-      "time_ms": 603.1226000050083,
-      "time_ms_baseline": 34.34819995891303,
-      "scale": 11.96682591864896,
+      "time_ms": 427.4137079992215,
+      "time_ms_baseline": 27.321500001562526,
+      "scale": 11.96682584891923,
       "scale_true": 11.9234,
-      "scale_err_pct": 0.36420751336832385,
-      "rotation": -176.85826251855065,
+      "scale_err_pct": 0.3642069285541807,
+      "rotation": -176.85826355951264,
       "rotation_true": 3.6399,
       "alias_hit": false,
       "n_candidates": 32,
@@ -831,30 +831,30 @@
         359.536
       ],
       "pred_xy": [
-        299.0098491832614,
-        327.91124545782804
+        299.00984919350594,
+        327.9112448170781
       ],
       "pred_xy_baseline": [
         950.0,
         315.0
       ],
-      "dir": "data/ood\\finfet_00017"
+      "dir": "data/ood/finfet_00017"
     },
     {
       "pair_id": "finfet_00019",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.5661632532079552,
+      "err": 1.566162969238744,
       "err_baseline": 0.8055017070124731,
-      "confidence": 0.8956974282673749,
-      "pai": 0.3963928832409106,
+      "confidence": 0.8956971534487546,
+      "pai": 0.39639303960027666,
       "decision": "unique",
-      "time_ms": 590.2432999573648,
-      "time_ms_baseline": 37.996599974576384,
-      "scale": 12.024342511682145,
+      "time_ms": 414.0854590004892,
+      "time_ms_baseline": 27.007332999346545,
+      "scale": 12.024342511506056,
       "scale_true": 12.0142,
-      "scale_err_pct": 0.08442103246278455,
-      "rotation": -6.357169761112033,
+      "scale_err_pct": 0.08442103099711495,
+      "rotation": -6.357169764668441,
       "rotation_true": -0.3699,
       "alias_hit": false,
       "n_candidates": 32,
@@ -863,30 +863,30 @@
         452.167
       ],
       "pred_xy": [
-        526.9634351246059,
-        451.13200260698795
+        526.9634347856045,
+        451.13200265169144
       ],
       "pred_xy_baseline": [
         525.0,
         452.0
       ],
-      "dir": "data/ood\\finfet_00019"
+      "dir": "data/ood/finfet_00019"
     },
     {
       "pair_id": "finfet_00021",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 0.6594270120038725,
+      "err": 0.6426110669930222,
       "err_baseline": 2.8880515923369363,
-      "confidence": 0.7597159677944774,
-      "pai": 0.5714135425141984,
+      "confidence": 0.7375145326717154,
+      "pai": 0.5833305477504616,
       "decision": "unique",
-      "time_ms": 575.0450999476016,
-      "time_ms_baseline": 31.469699984882027,
-      "scale": 10.25513734940092,
+      "time_ms": 375.09345799844596,
+      "time_ms_baseline": 27.203458001167746,
+      "scale": 10.25513729577786,
       "scale_true": 10.2281,
-      "scale_err_pct": 0.2643438116651247,
-      "rotation": -5.749687478303883,
+      "scale_err_pct": 0.2643432873931703,
+      "rotation": -5.749686339968122,
       "rotation_true": -4.9576,
       "alias_hit": false,
       "n_candidates": 32,
@@ -895,30 +895,30 @@
         483.649
       ],
       "pred_xy": [
-        599.0071030231193,
-        483.822830170393
+        598.9919478194788,
+        483.81444723904133
       ],
       "pred_xy_baseline": [
         596.0,
         482.0
       ],
-      "dir": "data/ood\\finfet_00021"
+      "dir": "data/ood/finfet_00021"
     },
     {
       "pair_id": "finfet_00023",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 132.9622795742356,
+      "err": 132.96227976720732,
       "err_baseline": 121.39712115614604,
       "confidence": 0.5333,
-      "pai": 0.9686453078154399,
+      "pai": 0.9686460264431651,
       "decision": "low_confidence_best",
-      "time_ms": 588.129999989178,
-      "time_ms_baseline": 31.044600007589906,
-      "scale": 10.191123448177116,
+      "time_ms": 393.6409170019033,
+      "time_ms_baseline": 32.25729200130445,
+      "scale": 10.191123495384469,
       "scale_true": 12.7142,
-      "scale_err_pct": 19.844556101232357,
-      "rotation": 4.749990432756988,
+      "scale_err_pct": 19.844555729936065,
+      "rotation": 4.749990432746131,
       "rotation_true": 4.2185,
       "alias_hit": false,
       "n_candidates": 32,
@@ -927,30 +927,30 @@
         335.855
       ],
       "pred_xy": [
-        518.5102070495486,
-        329.4975875520613
+        518.510207215324,
+        329.4975869792979
       ],
       "pred_xy_baseline": [
         507.0,
         331.0
       ],
-      "dir": "data/ood\\finfet_00023"
+      "dir": "data/ood/finfet_00023"
     },
     {
       "pair_id": "finfet_00025",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 530.3332516585717,
+      "err": 530.333252373162,
       "err_baseline": 627.2849945064843,
       "confidence": 0.5333,
-      "pai": 0.9849099216770489,
+      "pai": 0.9849096653498441,
       "decision": "low_confidence_best",
-      "time_ms": 592.3644999857061,
-      "time_ms_baseline": 32.729299971833825,
-      "scale": 11.165178533828787,
+      "time_ms": 443.3228749985574,
+      "time_ms_baseline": 27.960625000559958,
+      "scale": 11.165178541270018,
       "scale_true": 11.1321,
-      "scale_err_pct": 0.29714549661597645,
-      "rotation": 177.38409572644366,
+      "scale_err_pct": 0.2971455634607913,
+      "rotation": 177.38409588602053,
       "rotation_true": -2.582,
       "alias_hit": false,
       "n_candidates": 32,
@@ -959,30 +959,30 @@
         482.483
       ],
       "pred_xy": [
-        343.0156469400972,
-        411.95286616683006
+        343.01564659550786,
+        411.95286336168647
       ],
       "pred_xy_baseline": [
         242.0,
         454.0
       ],
-      "dir": "data/ood\\finfet_00025"
+      "dir": "data/ood/finfet_00025"
     },
     {
       "pair_id": "finfet_00027",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 290.45247840011274,
+      "err": 290.4524784097903,
       "err_baseline": 348.5848222642518,
       "confidence": 0.5333,
-      "pai": 0.9871734928576957,
+      "pai": 0.9871738826718306,
       "decision": "low_confidence_best",
-      "time_ms": 589.1956000123173,
-      "time_ms_baseline": 33.15269999438897,
-      "scale": 10.912196643440398,
+      "time_ms": 392.4316250013362,
+      "time_ms_baseline": 26.374250002845656,
+      "scale": 10.912196642870194,
       "scale_true": 10.9446,
-      "scale_err_pct": 0.2960670701496793,
-      "rotation": -5.771498598442605,
+      "scale_err_pct": 0.296067075359586,
+      "rotation": -5.771498588068113,
       "rotation_true": -5.73,
       "alias_hit": false,
       "n_candidates": 32,
@@ -991,30 +991,30 @@
         70.352
       ],
       "pred_xy": [
-        628.1505949795246,
-        101.2571085691452
+        628.1505951136351,
+        101.25710740685463
       ],
       "pred_xy_baseline": [
         686.0,
         107.0
       ],
-      "dir": "data/ood\\finfet_00027"
+      "dir": "data/ood/finfet_00027"
     },
     {
       "pair_id": "finfet_00029",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 272.7406910405701,
+      "err": 272.7407030810932,
       "err_baseline": 3.9437266639562703,
       "confidence": 0.5333,
-      "pai": 0.9918741239767441,
+      "pai": 0.9918719897121833,
       "decision": "low_confidence_best",
-      "time_ms": 592.0746000483632,
-      "time_ms_baseline": 33.2234000088647,
-      "scale": 10.261161492820005,
+      "time_ms": 411.5205000016431,
+      "time_ms_baseline": 26.400124999781838,
+      "scale": 10.261155839254497,
       "scale_true": 10.3593,
-      "scale_err_pct": 0.9473468977633095,
-      "rotation": -174.66127388357359,
+      "scale_err_pct": 0.947401472546425,
+      "rotation": -174.66125259728432,
       "rotation_true": 4.9689,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1023,14 +1023,14 @@
         158.012
       ],
       "pred_xy": [
-        608.4619663693011,
-        176.22300824522972
+        608.4619538411498,
+        176.22300136089325
       ],
       "pred_xy_baseline": [
         884.0,
         160.0
       ],
-      "dir": "data/ood\\finfet_00029"
+      "dir": "data/ood/finfet_00029"
     }
   ]
 }

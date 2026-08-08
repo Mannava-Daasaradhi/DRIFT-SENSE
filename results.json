@@ -3,12 +3,12 @@
     "n_pairs": 36,
     "data_dir": "data/eval",
     "reranker_enabled": false,
-    "median_error_px": 2.759109394421892,
-    "mean_error_px": 143.71530545238173,
+    "median_error_px": 2.75366295770963,
+    "mean_error_px": 126.6966366736864,
     "median_error_px_baseline": 3.8315923755743277,
-    "mean_error_px_baseline": 149.56575016615196,
-    "time_ms_median": 596.5953500126489,
-    "time_ms_worst": 647.5060000084341,
+    "mean_error_px_baseline": 157.27802840136812,
+    "time_ms_median": 384.190895501888,
+    "time_ms_worst": 441.1288749979576,
     "accuracy": {
       "1": 11.11111111111111,
       "2": 33.333333333333336,
@@ -66,9 +66,9 @@
       "low_confidence_best": 12,
       "tie_broken_by_center": 1
     },
-    "scale_error_pct_median": 0.2619601560318602,
-    "scale_within_2pct": 34,
-    "expected_calibration_error": 0.05409697620534813,
+    "scale_error_pct_median": 0.2619145858307964,
+    "scale_within_2pct": 33,
+    "expected_calibration_error": 0.05266285689714944,
     "success_case": "dram_00022",
     "failure_case": "dram_00002"
   },
@@ -77,17 +77,17 @@
       "pair_id": "dram_00000",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 2.4139107018318353,
+      "err": 2.4088760952849975,
       "err_baseline": 49.118452306643384,
-      "confidence": 0.5468986326518355,
-      "pai": 0.7005549801807867,
+      "confidence": 0.5954952152542454,
+      "pai": 0.6919152854877718,
       "decision": "unique",
-      "time_ms": 647.5060000084341,
-      "time_ms_baseline": 29.760200006421655,
-      "scale": 10.756942483162407,
+      "time_ms": 426.4940419998311,
+      "time_ms_baseline": 26.954667002428323,
+      "scale": 10.7569049100294,
       "scale_true": 10.7562,
-      "scale_err_pct": 0.006902838943184124,
-      "rotation": -1.8393762880285465,
+      "scale_err_pct": 0.006553522892844095,
+      "rotation": -1.839630163802866,
       "rotation_true": -1.8868,
       "alias_hit": false,
       "n_candidates": 32,
@@ -96,30 +96,30 @@
         404.286
       ],
       "pred_xy": [
-        129.76255577802658,
-        402.1214234083891
+        129.77232046425343,
+        402.12223437428474
       ],
       "pred_xy_baseline": [
         165.0,
         369.0
       ],
-      "dir": "data/eval\\dram_00000"
+      "dir": "data/eval/dram_00000"
     },
     {
       "pair_id": "dram_00002",
       "style": "dram",
       "ambiguity_class": "degenerate",
-      "err": 884.8636477052904,
+      "err": 884.8636543512459,
       "err_baseline": 935.6737726761396,
       "confidence": 0.5333,
-      "pai": 0.9652718609508584,
+      "pai": 0.9652593763120122,
       "decision": "low_confidence_best",
-      "time_ms": 602.3443999583833,
-      "time_ms_baseline": 35.04430002067238,
-      "scale": 10.151636418438548,
+      "time_ms": 391.4720419998048,
+      "time_ms_baseline": 26.282082999387057,
+      "scale": 10.151639743246875,
       "scale_true": 10.1752,
-      "scale_err_pct": 0.2315785592563542,
-      "rotation": -179.81780334223663,
+      "scale_err_pct": 0.2315458836497094,
+      "rotation": -179.817789260445,
       "rotation_true": 0.4285,
       "alias_hit": false,
       "n_candidates": 32,
@@ -128,30 +128,30 @@
         83.693
       ],
       "pred_xy": [
-        153.49796915403567,
-        864.4973790971562
+        153.49795898399316,
+        864.4973812061362
       ],
       "pred_xy_baseline": [
         55.0,
         865.0
       ],
-      "dir": "data/eval\\dram_00002"
+      "dir": "data/eval/dram_00002"
     },
     {
       "pair_id": "dram_00004",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 483.6758625247156,
+      "err": 483.6758550533131,
       "err_baseline": 542.584852940994,
       "confidence": 0.5333,
-      "pai": 0.9968164560091651,
+      "pai": 0.9967861449964126,
       "decision": "low_confidence_best",
-      "time_ms": 603.9739999687299,
-      "time_ms_baseline": 33.18739996757358,
-      "scale": 9.767329269216319,
+      "time_ms": 363.5930419986835,
+      "time_ms_baseline": 25.603833000786835,
+      "scale": 9.767326871449626,
       "scale_true": 9.789,
-      "scale_err_pct": 0.22137839190602698,
-      "rotation": 89.69301333036253,
+      "scale_err_pct": 0.2214028864069234,
+      "rotation": 89.69305645387794,
       "rotation_true": -0.1723,
       "alias_hit": false,
       "n_candidates": 32,
@@ -160,30 +160,30 @@
         717.215
       ],
       "pred_xy": [
-        659.6129325404763,
-        233.5420937091112
+        659.6129289194942,
+        233.54210119321942
       ],
       "pred_xy_baseline": [
         433.0,
         225.0
       ],
-      "dir": "data/eval\\dram_00004"
+      "dir": "data/eval/dram_00004"
     },
     {
       "pair_id": "dram_00006",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 291.4546250358985,
+      "err": 291.45257890725856,
       "err_baseline": 62.92867494235038,
       "confidence": 0.5333,
-      "pai": 0.9970018724652796,
+      "pai": 0.9968431876522474,
       "decision": "tie_broken_by_center",
-      "time_ms": 597.0223000040278,
-      "time_ms_baseline": 32.717499998398125,
-      "scale": 10.542317059903816,
+      "time_ms": 384.2782080027973,
+      "time_ms_baseline": 25.531041002977872,
+      "scale": 10.542270686213612,
       "scale_true": 10.6111,
-      "scale_err_pct": 0.6482168681492454,
-      "rotation": -177.13538609917754,
+      "scale_err_pct": 0.6486538981480526,
+      "rotation": -177.1345880834495,
       "rotation_true": 2.4242,
       "alias_hit": false,
       "n_candidates": 32,
@@ -192,30 +192,30 @@
         261.683
       ],
       "pred_xy": [
-        582.6001690924168,
-        514.4920913325623
+        582.6029907763004,
+        514.4913511285558
       ],
       "pred_xy_baseline": [
         782.0,
         230.0
       ],
-      "dir": "data/eval\\dram_00006"
+      "dir": "data/eval/dram_00006"
     },
     {
       "pair_id": "dram_00008",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 765.117095447503,
+      "err": 789.9339454541258,
       "err_baseline": 535.8666685893049,
       "confidence": 0.5333,
-      "pai": 0.9945122344797521,
+      "pai": 0.9983910541516999,
       "decision": "low_confidence_best",
-      "time_ms": 616.8957999907434,
-      "time_ms_baseline": 34.474899992346764,
-      "scale": 9.880642514257856,
+      "time_ms": 398.3193330022914,
+      "time_ms_baseline": 25.805624998611165,
+      "scale": 9.880631280791663,
       "scale_true": 9.8858,
-      "scale_err_pct": 0.05217064620105524,
-      "rotation": 2.719814269152039,
+      "scale_err_pct": 0.05228427854434366,
+      "rotation": -177.28018440877918,
       "rotation_true": 2.7668,
       "alias_hit": false,
       "n_candidates": 32,
@@ -224,30 +224,30 @@
         86.832
       ],
       "pred_xy": [
-        597.6351631432772,
-        851.5255138445646
+        202.50583389168605,
+        755.4901759242639
       ],
       "pred_xy_baseline": [
         184.0,
         394.0
       ],
-      "dir": "data/eval\\dram_00008"
+      "dir": "data/eval/dram_00008"
     },
     {
       "pair_id": "dram_00010",
       "style": "dram",
       "ambiguity_class": "degenerate",
-      "err": 254.05667194405265,
-      "err_baseline": 492.2516637859135,
+      "err": 254.0566344710414,
+      "err_baseline": 655.5362083821152,
       "confidence": 0.5333,
-      "pai": 0.9945461649844379,
+      "pai": 0.9940281270893973,
       "decision": "low_confidence_best",
-      "time_ms": 599.1657000267878,
-      "time_ms_baseline": 31.960399996023625,
-      "scale": 10.416577536421837,
+      "time_ms": 374.50041699776193,
+      "time_ms_baseline": 26.270708000083687,
+      "scale": 10.41657481221573,
       "scale_true": 10.3679,
-      "scale_err_pct": 0.4695023719541698,
-      "rotation": -177.39687856309342,
+      "scale_err_pct": 0.46947609656467987,
+      "rotation": -177.39688156322575,
       "rotation_true": 2.3303,
       "alias_hit": false,
       "n_candidates": 32,
@@ -256,30 +256,30 @@
         628.99
       ],
       "pred_xy": [
-        489.0090337814763,
-        744.9885708838701
+        489.00899431016296,
+        744.9885657234117
       ],
       "pred_xy_baseline": [
-        660.0,
-        920.0
+        918.0,
+        655.0
       ],
-      "dir": "data/eval\\dram_00010"
+      "dir": "data/eval/dram_00010"
     },
     {
       "pair_id": "dram_00012",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 2.454197545887051,
+      "err": 2.4541324349065547,
       "err_baseline": 4.098600004879721,
       "confidence": 0.92,
-      "pai": 0.5307676405919152,
+      "pai": 0.5308391370328026,
       "decision": "unique",
-      "time_ms": 592.7193000097759,
-      "time_ms_baseline": 31.017900037113577,
-      "scale": 10.550897938794973,
+      "time_ms": 395.60549999805517,
+      "time_ms_baseline": 25.790542000322603,
+      "scale": 10.550890474572585,
       "scale_true": 10.5237,
-      "scale_err_pct": 0.2584446420457962,
-      "rotation": 0.32191328062802427,
+      "scale_err_pct": 0.25837371430756134,
+      "rotation": 0.32194267438589463,
       "rotation_true": 0.5566,
       "alias_hit": false,
       "n_candidates": 32,
@@ -288,30 +288,30 @@
         777.739
       ],
       "pred_xy": [
-        827.3845006003976,
-        775.7469754964113
+        827.3845083788037,
+        775.7470613121986
       ],
       "pred_xy_baseline": [
         829.0,
         775.0
       ],
-      "dir": "data/eval\\dram_00012"
+      "dir": "data/eval/dram_00012"
     },
     {
       "pair_id": "dram_00014",
       "style": "dram",
       "ambiguity_class": "degenerate",
-      "err": 889.1856543636326,
+      "err": 889.1856517719169,
       "err_baseline": 353.58476108141315,
       "confidence": 0.5333,
-      "pai": 0.9867816806886739,
+      "pai": 0.9868042859243304,
       "decision": "low_confidence_best",
-      "time_ms": 563.1376000237651,
-      "time_ms_baseline": 29.59230000851676,
-      "scale": 10.757050352749724,
+      "time_ms": 391.1078329983866,
+      "time_ms_baseline": 25.222083000699058,
+      "scale": 10.7570628962467,
       "scale_true": 10.7636,
-      "scale_err_pct": 0.06084996887914992,
-      "rotation": -176.84719783220066,
+      "scale_err_pct": 0.06073343261827692,
+      "rotation": -176.8471447027755,
       "rotation_true": 2.9143,
       "alias_hit": false,
       "n_candidates": 32,
@@ -320,30 +320,30 @@
         269.662
       ],
       "pred_xy": [
-        944.0496936440468,
-        159.97730391658843
+        944.0496907830238,
+        159.9773019105196
       ],
       "pred_xy_baseline": [
         321.0,
         510.0
       ],
-      "dir": "data/eval\\dram_00014"
+      "dir": "data/eval/dram_00014"
     },
     {
       "pair_id": "dram_00016",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 0.3931900394722961,
+      "err": 0.3927565563356256,
       "err_baseline": 2.202662025822389,
       "confidence": 0.5333,
-      "pai": 0.8014558960589194,
+      "pai": 0.8002682955520118,
       "decision": "unique",
-      "time_ms": 580.8840999961831,
-      "time_ms_baseline": 29.318499960936606,
-      "scale": 10.564266587131165,
+      "time_ms": 400.97916700324276,
+      "time_ms_baseline": 25.711792000947753,
+      "scale": 10.564261948831405,
       "scale_true": 10.5978,
-      "scale_err_pct": 0.31641862338253685,
-      "rotation": -1.8144694830945411,
+      "scale_err_pct": 0.31646239001108495,
+      "rotation": -1.814491345324086,
       "rotation_true": -1.7708,
       "alias_hit": false,
       "n_candidates": 32,
@@ -352,30 +352,30 @@
         728.946
       ],
       "pred_xy": [
-        640.507313400507,
-        728.6812365055084
+        640.508620172739,
+        728.6804495751858
       ],
       "pred_xy_baseline": [
         643.0,
         729.0
       ],
-      "dir": "data/eval\\dram_00016"
+      "dir": "data/eval/dram_00016"
     },
     {
       "pair_id": "dram_00018",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.1366798815237313,
+      "err": 1.14513504075204,
       "err_baseline": 1.5246314308710698,
       "confidence": 0.5333,
-      "pai": 0.8690034184516358,
+      "pai": 0.8698739468730091,
       "decision": "unique",
-      "time_ms": 586.3553999806754,
-      "time_ms_baseline": 31.652199977543205,
-      "scale": 10.158580655546682,
+      "time_ms": 392.2002910003357,
+      "time_ms_baseline": 25.923500001226785,
+      "scale": 10.158601235073068,
       "scale_true": 10.1582,
-      "scale_err_pct": 0.003747273598488432,
-      "rotation": -0.24671864501488017,
+      "scale_err_pct": 0.003949863884023603,
+      "rotation": -0.24671418707416137,
       "rotation_true": -0.0205,
       "alias_hit": false,
       "n_candidates": 32,
@@ -384,30 +384,30 @@
         342.999
       ],
       "pred_xy": [
-        114.61338886618614,
-        343.8411867916584
+        114.62646105885506,
+        343.8406902551651
       ],
       "pred_xy_baseline": [
         115.0,
         344.0
       ],
-      "dir": "data/eval\\dram_00018"
+      "dir": "data/eval/dram_00018"
     },
     {
       "pair_id": "dram_00020",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 1.9828598926313377,
-      "err_baseline": 559.8098249798766,
+      "err": 1.9847184662376025,
+      "err_baseline": 674.1672968514566,
       "confidence": 0.5333,
-      "pai": 0.7866995627586663,
+      "pai": 0.788458219717514,
       "decision": "unique",
-      "time_ms": 591.5183000033721,
-      "time_ms_baseline": 29.407900001388043,
+      "time_ms": 394.9503750009171,
+      "time_ms_baseline": 25.253625000914326,
       "scale": 10.255152265412116,
       "scale_true": 10.25,
       "scale_err_pct": 0.050266004020644954,
-      "rotation": 2.64276199566757,
+      "rotation": 2.643334679762148,
       "rotation_true": 2.5515,
       "alias_hit": false,
       "n_candidates": 32,
@@ -416,30 +416,30 @@
         69.112
       ],
       "pred_xy": [
-        399.20190438628197,
-        71.08977564424276
+        399.2012372016907,
+        71.09168670326471
       ],
       "pred_xy_baseline": [
-        776.0,
-        483.0
+        932.0,
+        482.0
       ],
-      "dir": "data/eval\\dram_00020"
+      "dir": "data/eval/dram_00020"
     },
     {
       "pair_id": "dram_00022",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 0.059039362383287344,
+      "err": 0.05903842024823544,
       "err_baseline": 2.5933077333783987,
-      "confidence": 0.781511088133845,
-      "pai": 0.6525336827686582,
+      "confidence": 0.7814993640554072,
+      "pai": 0.6525366214016732,
       "decision": "unique",
-      "time_ms": 580.7367999805138,
-      "time_ms_baseline": 30.019600002560765,
-      "scale": 9.06816992623833,
+      "time_ms": 350.7710829981079,
+      "time_ms_baseline": 25.70950000153971,
+      "scale": 9.068169270862283,
       "scale_true": 9.0347,
-      "scale_err_pct": 0.3704597412014665,
-      "rotation": 2.6675404704848233,
+      "scale_err_pct": 0.37045248721354473,
+      "rotation": 2.6675391588195225,
       "rotation_true": 2.3391,
       "alias_hit": false,
       "n_candidates": 32,
@@ -448,30 +448,30 @@
         607.627
       ],
       "pred_xy": [
-        379.0474293231964,
-        607.6860220581293
+        379.0474205315113,
+        607.6860213279724
       ],
       "pred_xy_baseline": [
         378.0,
         610.0
       ],
-      "dir": "data/eval\\dram_00022"
+      "dir": "data/eval/dram_00022"
     },
     {
       "pair_id": "dram_00024",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 46.95868169154326,
+      "err": 46.96024269721297,
       "err_baseline": 70.30111325576577,
       "confidence": 0.5333,
-      "pai": 0.889180028064456,
+      "pai": 0.8806086795997796,
       "decision": "unique",
-      "time_ms": 598.3953999821097,
-      "time_ms_baseline": 31.766499974764884,
-      "scale": 9.337354773805586,
+      "time_ms": 367.65825000111363,
+      "time_ms_baseline": 26.24400000058813,
+      "scale": 9.337354298184877,
       "scale_true": 9.3319,
-      "scale_err_pct": 0.058452981767775164,
-      "rotation": 177.10294009621066,
+      "scale_err_pct": 0.058447885048896475,
+      "rotation": 177.1028936423803,
       "rotation_true": -2.9826,
       "alias_hit": false,
       "n_candidates": 32,
@@ -480,30 +480,30 @@
         583.691
       ],
       "pred_xy": [
-        504.0165553689003,
-        538.0682945176959
+        504.01256819069386,
+        538.067659907043
       ],
       "pred_xy_baseline": [
         478.0,
         524.0
       ],
-      "dir": "data/eval\\dram_00024"
+      "dir": "data/eval/dram_00024"
     },
     {
       "pair_id": "dram_00026",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 2.827069669713919,
+      "err": 2.81617478490306,
       "err_baseline": 3.559656725022778,
       "confidence": 0.92,
-      "pai": 0.44116320376947804,
+      "pai": 0.4399729579025057,
       "decision": "unique",
-      "time_ms": 623.1564999907278,
-      "time_ms_baseline": 31.824600009713322,
-      "scale": 10.555491671701967,
+      "time_ms": 396.2986250007816,
+      "time_ms_baseline": 25.377499998285202,
+      "scale": 10.554253752606735,
       "scale_true": 10.6127,
-      "scale_err_pct": 0.5390553610111786,
-      "rotation": -0.6542924704972961,
+      "scale_err_pct": 0.5507198676422115,
+      "rotation": -0.7111722334570345,
       "rotation_true": -0.6735,
       "alias_hit": false,
       "n_candidates": 32,
@@ -512,30 +512,30 @@
         258.27
       ],
       "pred_xy": [
-        394.7542204260826,
-        256.0338905341923
+        394.78286027908325,
+        256.0256818253547
       ],
       "pred_xy_baseline": [
         393.0,
         259.0
       ],
-      "dir": "data/eval\\dram_00026"
+      "dir": "data/eval/dram_00026"
     },
     {
       "pair_id": "dram_00028",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 38.59888580179695,
+      "err": 38.597927252653136,
       "err_baseline": 5.948834675799978,
-      "confidence": 0.7332770894933242,
-      "pai": 0.6264201940617066,
+      "confidence": 0.7301694329073072,
+      "pai": 0.6280003271022087,
       "decision": "unique",
-      "time_ms": 594.5499000372365,
-      "time_ms_baseline": 29.430900001898408,
-      "scale": 11.055480996010143,
+      "time_ms": 372.35658300051,
+      "time_ms_baseline": 25.74629099763115,
+      "scale": 11.055477878786734,
       "scale_true": 10.9398,
-      "scale_err_pct": 1.0574324577244834,
-      "rotation": 177.09490245585005,
+      "scale_err_pct": 1.0574039633881227,
+      "rotation": 177.09490890016377,
       "rotation_true": -2.711,
       "alias_hit": false,
       "n_candidates": 32,
@@ -544,30 +544,30 @@
         459.647
       ],
       "pred_xy": [
-        811.553361415863,
-        422.07676604390144
+        811.5454214215279,
+        422.0796224549413
       ],
       "pred_xy_baseline": [
         823.0,
         465.0
       ],
-      "dir": "data/eval\\dram_00028"
+      "dir": "data/eval/dram_00028"
     },
     {
       "pair_id": "dram_00030",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 2.853539826683605,
+      "err": 2.853543994513508,
       "err_baseline": 2.9686025331795673,
-      "confidence": 0.8907799185418556,
-      "pai": 0.597417794220038,
+      "confidence": 0.8907228378500067,
+      "pai": 0.597405829207181,
       "decision": "unique",
-      "time_ms": 615.5232000164688,
-      "time_ms_baseline": 30.992700019851327,
-      "scale": 9.34210699011011,
+      "time_ms": 350.88220900070155,
+      "time_ms_baseline": 25.39608300139662,
+      "scale": 9.342130224078003,
       "scale_true": 9.3123,
-      "scale_err_pct": 0.3200819358279922,
-      "rotation": 1.8329398911494081,
+      "scale_err_pct": 0.3203314334590041,
+      "rotation": 1.832886473291893,
       "rotation_true": 1.7388,
       "alias_hit": false,
       "n_candidates": 32,
@@ -576,30 +576,30 @@
         557.624
       ],
       "pred_xy": [
-        234.19571140408516,
-        555.3179430365562
+        234.1957280486822,
+        555.3179500102997
       ],
       "pred_xy_baseline": [
         235.0,
         556.0
       ],
-      "dir": "data/eval\\dram_00030"
+      "dir": "data/eval/dram_00030"
     },
     {
       "pair_id": "dram_00032",
       "style": "dram",
       "ambiguity_class": "unique",
-      "err": 3.293594683445775,
+      "err": 3.293664919087658,
       "err_baseline": 1.503505902881647,
       "confidence": 0.92,
-      "pai": 0.3774464849957283,
+      "pai": 0.37765576017755065,
       "decision": "unique",
-      "time_ms": 621.5667999931611,
-      "time_ms_baseline": 31.70930000487715,
-      "scale": 10.52699664984083,
+      "time_ms": 407.4263330003305,
+      "time_ms_baseline": 25.475250000454253,
+      "scale": 10.52700118536151,
       "scale_true": 10.573,
-      "scale_err_pct": 0.4351021484835893,
-      "rotation": 1.3599921681377225,
+      "scale_err_pct": 0.4350592512862089,
+      "rotation": 1.3601034482596788,
       "rotation_true": 1.5883,
       "alias_hit": false,
       "n_candidates": 32,
@@ -608,30 +608,30 @@
         922.039
       ],
       "pred_xy": [
-        429.46421801671386,
-        923.3092637509108
+        429.4641081765294,
+        923.3091830909252
       ],
       "pred_xy_baseline": [
         431.0,
         922.0
       ],
-      "dir": "data/eval\\dram_00032"
+      "dir": "data/eval/dram_00032"
     },
     {
       "pair_id": "dram_00034",
       "style": "dram",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.854849231605191,
+      "err": 1.8553368737768117,
       "err_baseline": 4.743509249490298,
       "confidence": 0.5333,
-      "pai": 0.8581092688080261,
+      "pai": 0.8651495747710475,
       "decision": "unique",
-      "time_ms": 593.1045999750495,
-      "time_ms_baseline": 32.30800002347678,
-      "scale": 10.745374937972226,
+      "time_ms": 374.50487499882,
+      "time_ms_baseline": 25.42616700156941,
+      "scale": 10.745372190985442,
       "scale_true": 10.7459,
-      "scale_err_pct": 0.004886161492053536,
-      "rotation": -0.14787839408660375,
+      "scale_err_pct": 0.004911724607137608,
+      "rotation": -0.1419332395191759,
       "rotation_true": -0.3848,
       "alias_hit": false,
       "n_candidates": 32,
@@ -640,30 +640,30 @@
         278.572
       ],
       "pred_xy": [
-        101.37673259526491,
-        276.75227677822113
+        101.37380032241344,
+        276.75236093997955
       ],
       "pred_xy_baseline": [
         103.0,
         274.0
       ],
-      "dir": "data/eval\\dram_00034"
+      "dir": "data/eval/dram_00034"
     },
     {
       "pair_id": "finfet_00001",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 185.75362752906884,
+      "err": 185.7536200453952,
       "err_baseline": 282.9438774386186,
       "confidence": 0.5333,
-      "pai": 0.9619486166649635,
+      "pai": 0.9619481504990617,
       "decision": "low_confidence_best",
-      "time_ms": 597.0683000050485,
-      "time_ms_baseline": 34.11849995609373,
-      "scale": 10.916358316015158,
+      "time_ms": 360.2813340003195,
+      "time_ms_baseline": 25.56725000249571,
+      "scale": 10.9163584983459,
       "scale_true": 10.9684,
-      "scale_err_pct": 0.47446923876630126,
-      "rotation": 2.624012972576338,
+      "scale_err_pct": 0.47446757643868276,
+      "rotation": 2.6240134544962075,
       "rotation_true": 2.9121,
       "alias_hit": false,
       "n_candidates": 32,
@@ -672,30 +672,30 @@
         757.428
       ],
       "pred_xy": [
-        543.0958021879196,
-        744.1968277841806
+        543.0957947000861,
+        744.1968279927969
       ],
       "pred_xy_baseline": [
         75.0,
         766.0
       ],
-      "dir": "data/eval\\finfet_00001"
+      "dir": "data/eval/finfet_00001"
     },
     {
       "pair_id": "finfet_00003",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 0.5967554801434857,
+      "err": 0.5967570795851871,
       "err_baseline": 1.0985417606991077,
       "confidence": 0.92,
-      "pai": 0.5139268674547856,
+      "pai": 0.5139235810992872,
       "decision": "unique",
-      "time_ms": 588.881500007119,
-      "time_ms_baseline": 32.705900026485324,
-      "scale": 10.747611501146952,
+      "time_ms": 384.1035830009787,
+      "time_ms_baseline": 31.233333000272978,
+      "scale": 10.747610466163557,
       "scale_true": 10.806,
-      "scale_err_pct": 0.5403340630487392,
-      "rotation": 0.7625670615653348,
+      "scale_err_pct": 0.5403436409072899,
+      "rotation": 0.7625786379911119,
       "rotation_true": 0.9263,
       "alias_hit": false,
       "n_candidates": 32,
@@ -704,30 +704,30 @@
         814.105
       ],
       "pred_xy": [
-        672.0445424616337,
-        814.6096799969673
+        672.04454716295,
+        814.6096848547459
       ],
       "pred_xy_baseline": [
         673.0,
         815.0
       ],
-      "dir": "data/eval\\finfet_00003"
+      "dir": "data/eval/finfet_00003"
     },
     {
       "pair_id": "finfet_00005",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 2.175245562509639,
+      "err": 2.1729110941646668,
       "err_baseline": 0.2630304164921115,
       "confidence": 0.5333,
-      "pai": 0.8371270239099343,
+      "pai": 0.8189947632856825,
       "decision": "unique",
-      "time_ms": 583.5361999925226,
-      "time_ms_baseline": 32.48080000048503,
-      "scale": 9.485575933202217,
+      "time_ms": 374.78612499762676,
+      "time_ms_baseline": 25.508749997243285,
+      "scale": 9.470177263366335,
       "scale_true": 9.472,
-      "scale_err_pct": 0.14332699748962385,
-      "rotation": 0.8308881202824523,
+      "scale_err_pct": 0.01924341885203701,
+      "rotation": 2.2357934874750924,
       "rotation_true": 2.5725,
       "alias_hit": false,
       "n_candidates": 32,
@@ -736,30 +736,30 @@
         679.828
       ],
       "pred_xy": [
-        421.81438064575195,
-        681.7666272222996
+        422.775912463665,
+        682.0007662641583
       ],
       "pred_xy_baseline": [
         423.0,
         680.0
       ],
-      "dir": "data/eval\\finfet_00005"
+      "dir": "data/eval/finfet_00005"
     },
     {
       "pair_id": "finfet_00007",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 271.34398828972337,
+      "err": 271.34398649774545,
       "err_baseline": 273.8476865138721,
       "confidence": 0.5333,
-      "pai": 0.850535185652672,
+      "pai": 0.8518997198038263,
       "decision": "unique",
-      "time_ms": 615.0599000393413,
-      "time_ms_baseline": 30.94480000436306,
-      "scale": 9.177909269884948,
+      "time_ms": 372.66908399760723,
+      "time_ms_baseline": 25.116958997386973,
+      "scale": 9.177904110581304,
       "scale_true": 9.1561,
-      "scale_err_pct": 0.23819388041794506,
-      "rotation": -1.2425064371664973,
+      "scale_err_pct": 0.23813753215128278,
+      "rotation": -1.2425155678992041,
       "rotation_true": 2.5784,
       "alias_hit": false,
       "n_candidates": 32,
@@ -768,30 +768,30 @@
         269.128
       ],
       "pred_xy": [
-        513.521021137014,
-        282.30232587456703
+        513.5210246369243,
+        282.30236096680164
       ],
       "pred_xy_baseline": [
         511.0,
         282.0
       ],
-      "dir": "data/eval\\finfet_00007"
+      "dir": "data/eval/finfet_00007"
     },
     {
       "pair_id": "finfet_00009",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 38.76717396407688,
+      "err": 38.76715412286831,
       "err_baseline": 0.7942455539692852,
-      "confidence": 0.7075756094844079,
-      "pai": 0.49571091908990195,
+      "confidence": 0.7075796095362732,
+      "pai": 0.4957044458748546,
       "decision": "unique",
-      "time_ms": 588.1835999898612,
-      "time_ms_baseline": 31.880300026386976,
-      "scale": 7.941101958324426,
+      "time_ms": 407.1369580015016,
+      "time_ms_baseline": 25.38641699720756,
+      "scale": 7.94110197089178,
       "scale_true": 9.2097,
-      "scale_err_pct": 13.774585943902343,
-      "rotation": 137.24909731258373,
+      "scale_err_pct": 13.77458580744454,
+      "rotation": 137.24907548563522,
       "rotation_true": 1.1067,
       "alias_hit": false,
       "n_candidates": 32,
@@ -800,30 +800,30 @@
         727.545
       ],
       "pred_xy": [
-        708.4341554641724,
-        763.989599019289
+        708.4341497272253,
+        763.9895758330822
       ],
       "pred_xy_baseline": [
         721.0,
         728.0
       ],
-      "dir": "data/eval\\finfet_00009"
+      "dir": "data/eval/finfet_00009"
     },
     {
       "pair_id": "finfet_00011",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 229.6565327944673,
+      "err": 229.65826799606054,
       "err_baseline": 6.085819665418981,
       "confidence": 0.5333,
-      "pai": 0.998994650125755,
+      "pai": 0.9986802134201467,
       "decision": "low_confidence_best",
-      "time_ms": 596.1684000212699,
-      "time_ms_baseline": 34.75719998823479,
-      "scale": 10.235817102723331,
+      "time_ms": 397.8588329991908,
+      "time_ms_baseline": 25.344833000417566,
+      "scale": 10.236234052631639,
       "scale_true": 10.2048,
-      "scale_err_pct": 0.3039462088755348,
-      "rotation": -0.11412558236432346,
+      "scale_err_pct": 0.30803203033512233,
+      "rotation": -0.13284719154731306,
       "rotation_true": 0.0361,
       "alias_hit": false,
       "n_candidates": 32,
@@ -832,30 +832,30 @@
         900.801
       ],
       "pred_xy": [
-        344.9017227515578,
-        898.1928920894861
+        344.9034506827593,
+        898.1922421604395
       ],
       "pred_xy_baseline": [
         119.0,
         896.0
       ],
-      "dir": "data/eval\\finfet_00011"
+      "dir": "data/eval/finfet_00011"
     },
     {
       "pair_id": "finfet_00013",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 1.6016995202820914,
+      "err": 1.6016991140633363,
       "err_baseline": 3.038740034948687,
       "confidence": 0.5333,
-      "pai": 0.9404391544652505,
+      "pai": 0.9404389652661007,
       "decision": "low_confidence_best",
-      "time_ms": 608.9355999720283,
-      "time_ms_baseline": 29.325700015760958,
-      "scale": 10.414556763684601,
+      "time_ms": 402.24058300009347,
+      "time_ms_baseline": 25.46954200079199,
+      "scale": 10.414556763980748,
       "scale_true": 10.391,
-      "scale_err_pct": 0.22670352886729883,
-      "rotation": 0.2235967911541934,
+      "scale_err_pct": 0.22670353171733354,
+      "rotation": 0.22359678969434071,
       "rotation_true": 0.0025,
       "alias_hit": false,
       "n_candidates": 32,
@@ -864,30 +864,30 @@
         293.01
       ],
       "pred_xy": [
-        677.0401031039655,
-        291.9948271899484
+        677.0401034913957,
+        291.99482735805213
       ],
       "pred_xy_baseline": [
         676.0,
         291.0
       ],
-      "dir": "data/eval\\finfet_00013"
+      "dir": "data/eval/finfet_00013"
     },
     {
       "pair_id": "finfet_00015",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.569854470691445,
+      "err": 1.5698564872111698,
       "err_baseline": 3.7537954126457738,
-      "confidence": 0.6573974941834614,
-      "pai": 0.5876271312252425,
+      "confidence": 0.6573928127044842,
+      "pai": 0.5876293906266309,
       "decision": "unique",
-      "time_ms": 598.9097999990918,
-      "time_ms_baseline": 28.927900013513863,
-      "scale": 9.185992635850305,
+      "time_ms": 370.61891600023955,
+      "time_ms_baseline": 26.76575000077719,
+      "scale": 9.185991902061852,
       "scale_true": 9.1749,
-      "scale_err_pct": 0.12090198095134988,
-      "rotation": 0.7796497448667878,
+      "scale_err_pct": 0.12089398316987846,
+      "rotation": 0.779649233984486,
       "rotation_true": -2.9245,
       "alias_hit": false,
       "n_candidates": 32,
@@ -896,30 +896,30 @@
         661.656
       ],
       "pred_xy": [
-        863.6862076073885,
-        663.2249998748302
+        863.6862060725689,
+        663.2250018417835
       ],
       "pred_xy_baseline": [
         860.0,
         662.0
       ],
-      "dir": "data/eval\\finfet_00015"
+      "dir": "data/eval/finfet_00015"
     },
     {
       "pair_id": "finfet_00017",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.8591972377850914,
+      "err": 1.8591726303461904,
       "err_baseline": 675.1448812580896,
       "confidence": 0.5333,
-      "pai": 0.9444776265109427,
+      "pai": 0.9444421313091863,
       "decision": "low_confidence_best",
-      "time_ms": 592.7525999723002,
-      "time_ms_baseline": 34.79070001048967,
-      "scale": 10.931222500748172,
+      "time_ms": 441.1288749979576,
+      "time_ms_baseline": 25.37987499817973,
+      "scale": 10.931217666656543,
       "scale_true": 10.9779,
-      "scale_err_pct": 0.42519515801590635,
-      "rotation": 0.24394583293835126,
+      "scale_err_pct": 0.4252391927732672,
+      "rotation": 0.24400352747656484,
       "rotation_true": 2.8324,
       "alias_hit": false,
       "n_candidates": 32,
@@ -928,30 +928,30 @@
         860.4
       ],
       "pred_xy": [
-        263.79999446868896,
-        862.251682266593
+        263.80000552535057,
+        862.2516565620899
       ],
       "pred_xy_baseline": [
         938.0,
         828.0
       ],
-      "dir": "data/eval\\finfet_00017"
+      "dir": "data/eval/finfet_00017"
     },
     {
       "pair_id": "finfet_00019",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 0.29337448230420793,
+      "err": 0.2933876830364388,
       "err_baseline": 2.5203858831535877,
       "confidence": 0.5333,
-      "pai": 0.7195446245494728,
+      "pai": 0.7195560973944839,
       "decision": "unique",
-      "time_ms": 597.2609999589622,
-      "time_ms_baseline": 30.980799987446517,
-      "scale": 9.51856326752916,
+      "time_ms": 369.4747500012454,
+      "time_ms_baseline": 25.838665998890065,
+      "scale": 9.51856519660559,
       "scale_true": 9.5439,
-      "scale_err_pct": 0.2654756700179242,
-      "rotation": -2.313324110302233,
+      "scale_err_pct": 0.2654554573540315,
+      "rotation": -2.3133883252146177,
       "rotation_true": 2.4477,
       "alias_hit": false,
       "n_candidates": 32,
@@ -960,62 +960,62 @@
         346.312
       ],
       "pred_xy": [
-        418.78786423802376,
-        346.37346133589745
+        418.7878768444061,
+        346.3734655082226
       ],
       "pred_xy_baseline": [
         416.0,
         346.0
       ],
-      "dir": "data/eval\\finfet_00019"
+      "dir": "data/eval/finfet_00019"
     },
     {
       "pair_id": "finfet_00021",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 714.2798622031831,
+      "err": 76.79854915016021,
       "err_baseline": 2.3442322837125675,
       "confidence": 0.5333,
-      "pai": 0.9553865597980299,
+      "pai": 0.9677643897922622,
       "decision": "low_confidence_best",
-      "time_ms": 594.0427000168711,
-      "time_ms_baseline": 31.967799994163215,
-      "scale": 8.952792769330042,
+      "time_ms": 376.4986249989306,
+      "time_ms_baseline": 25.37500000107684,
+      "scale": 4.210020477270424,
       "scale_true": 9.0288,
-      "scale_err_pct": 0.8418309262577353,
-      "rotation": -0.20125189463843185,
+      "scale_err_pct": 53.3712068351229,
+      "rotation": -178.55709541098258,
       "rotation_true": 1.3066,
       "alias_hit": false,
-      "n_candidates": 32,
+      "n_candidates": 28,
       "true_xy": [
         910.656,
         355.033
       ],
       "pred_xy": [
-        196.5827721953392,
-        372.2128393948078
+        833.8610114604235,
+        354.2934820652008
       ],
       "pred_xy_baseline": [
         913.0,
         355.0
       ],
-      "dir": "data/eval\\finfet_00021"
+      "dir": "data/eval/finfet_00021"
     },
     {
       "pair_id": "finfet_00023",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.8586332784155002,
+      "err": 1.8586379788404226,
       "err_baseline": 3.499110315494503,
       "confidence": 0.5333,
-      "pai": 0.7522642129255122,
+      "pai": 0.7522666288593107,
       "decision": "unique",
-      "time_ms": 577.2514999844134,
-      "time_ms_baseline": 29.41249997820705,
-      "scale": 9.015902710632394,
+      "time_ms": 352.8565000015078,
+      "time_ms_baseline": 25.755083002877655,
+      "scale": 9.01590470727681,
       "scale_true": 9.3883,
-      "scale_err_pct": 3.966610455221977,
-      "rotation": -2.5818110931405727,
+      "scale_err_pct": 3.9665891878528474,
+      "rotation": -2.5818223023200915,
       "rotation_true": -1.4671,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1024,30 +1024,30 @@
         369.938
       ],
       "pred_xy": [
-        331.0432474501431,
-        371.62330400943756
+        331.0432471334934,
+        371.62330904603004
       ],
       "pred_xy_baseline": [
         329.0,
         372.0
       ],
-      "dir": "data/eval\\finfet_00023"
+      "dir": "data/eval/finfet_00023"
     },
     {
       "pair_id": "finfet_00025",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 2.1608279500664076,
+      "err": 2.160881024915777,
       "err_baseline": 3.233960420289684,
-      "confidence": 0.9190694104411246,
-      "pai": 0.49916419400089185,
+      "confidence": 0.9190615896910238,
+      "pai": 0.49918107104519405,
       "decision": "unique",
-      "time_ms": 609.7431000089273,
-      "time_ms_baseline": 31.890799989923835,
-      "scale": 9.321818307957043,
+      "time_ms": 377.90374999894993,
+      "time_ms_baseline": 26.791667001816677,
+      "scale": 9.321814548188485,
       "scale_true": 9.2737,
-      "scale_err_pct": 0.5188684986256136,
-      "rotation": 0.34010670527732145,
+      "scale_err_pct": 0.5188279563549049,
+      "rotation": 0.3400753598176891,
       "rotation_true": -1.3929,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1056,30 +1056,30 @@
         911.944
       ],
       "pred_xy": [
-        150.33142817020416,
-        913.2432794719934
+        150.3313778936863,
+        913.2433009296656
       ],
       "pred_xy_baseline": [
         151.0,
         915.0
       ],
-      "dir": "data/eval\\finfet_00025"
+      "dir": "data/eval/finfet_00025"
     },
     {
       "pair_id": "finfet_00027",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 3.1590756545989827,
+      "err": 3.159071627365893,
       "err_baseline": 3.909389338502882,
       "confidence": 0.5333,
-      "pai": 0.6602937571939967,
+      "pai": 0.6602958164880457,
       "decision": "unique",
-      "time_ms": 581.9420999614522,
-      "time_ms_baseline": 29.313999984879047,
-      "scale": 9.326866801398648,
+      "time_ms": 378.78779099992244,
+      "time_ms_baseline": 26.1075409980549,
+      "scale": 9.326866826514491,
       "scale_true": 9.3231,
-      "scale_err_pct": 0.040402885291883614,
-      "rotation": -0.6756985422510411,
+      "scale_err_pct": 0.04040315468557913,
+      "rotation": -0.6756962825480173,
       "rotation_true": 2.1849,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1088,30 +1088,30 @@
         75.365
       ],
       "pred_xy": [
-        186.64517828822136,
-        72.506466537714
+        186.64518147706985,
+        72.50646948814392
       ],
       "pred_xy_baseline": [
         186.0,
         72.0
       ],
-      "dir": "data/eval\\finfet_00027"
+      "dir": "data/eval/finfet_00027"
     },
     {
       "pair_id": "finfet_00029",
       "style": "finfet",
       "ambiguity_class": "weakly_ambiguous",
-      "err": 2.618313208137655,
-      "err_baseline": 2.311913925733354,
+      "err": 2.618313930094016,
+      "err_baseline": 2.3119139257333536,
       "confidence": 0.5333,
-      "pai": 0.9548808577680931,
+      "pai": 0.9548805963332211,
       "decision": "low_confidence_best",
-      "time_ms": 603.7886000121944,
-      "time_ms_baseline": 32.60719997342676,
-      "scale": 10.578054890851266,
+      "time_ms": 395.81533299860894,
+      "time_ms_baseline": 26.074416000483325,
+      "scale": 10.578054890739242,
       "scale_true": 10.575,
-      "scale_err_pct": 0.028887856749570586,
-      "rotation": -1.2530359636295714,
+      "scale_err_pct": 0.028887855690240393,
+      "rotation": -1.2530362612746728,
       "rotation_true": 0.8214,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1120,30 +1120,30 @@
         431.189
       ],
       "pred_xy": [
-        513.6214838474989,
-        431.81036111712456
+        513.6214831843972,
+        431.8103614449501
       ],
       "pred_xy_baseline": [
         514.0,
         432.0
       ],
-      "dir": "data/eval\\finfet_00029"
+      "dir": "data/eval/finfet_00029"
     },
     {
       "pair_id": "finfet_00031",
       "style": "finfet",
       "ambiguity_class": "degenerate",
-      "err": 38.982900264995095,
+      "err": 38.9829035057884,
       "err_baseline": 485.6693572400878,
       "confidence": 0.5333,
-      "pai": 0.9407439018213614,
+      "pai": 0.9407523913996275,
       "decision": "low_confidence_best",
-      "time_ms": 582.9018999938853,
-      "time_ms_baseline": 31.60529996966943,
-      "scale": 9.266106489164452,
+      "time_ms": 380.3624169995601,
+      "time_ms_baseline": 25.548458001139807,
+      "scale": 9.266105520780217,
       "scale_true": 9.2682,
-      "scale_err_pct": 0.02258810594881885,
-      "rotation": -1.3629972025906625,
+      "scale_err_pct": 0.022598554409523443,
+      "rotation": -1.3630004059659484,
       "rotation_true": -1.5371,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1152,30 +1152,30 @@
         295.051
       ],
       "pred_xy": [
-        240.43596771359444,
-        297.5147370547056
+        240.43597117066383,
+        297.5147337419912
       ],
       "pred_xy_baseline": [
         687.0,
         309.0
       ],
-      "dir": "data/eval\\finfet_00031"
+      "dir": "data/eval/finfet_00031"
     },
     {
       "pair_id": "finfet_00033",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 2.6911491191298658,
+      "err": 2.6911511305162006,
       "err_baseline": 0.8558154006560167,
       "confidence": 0.5333,
-      "pai": 0.7409334056061317,
+      "pai": 0.7409334918368012,
       "decision": "unique",
-      "time_ms": 588.814300019294,
-      "time_ms_baseline": 33.30370003823191,
-      "scale": 10.746524230801256,
+      "time_ms": 406.2282920021971,
+      "time_ms_baseline": 25.14454099946306,
+      "scale": 10.746524234636636,
       "scale_true": 10.6701,
-      "scale_err_pct": 0.7162466218803629,
-      "rotation": -8.309918154976998,
+      "scale_err_pct": 0.7162466578254807,
+      "rotation": -8.309918308143239,
       "rotation_true": 0.3252,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1184,30 +1184,30 @@
         714.346
       ],
       "pred_xy": [
-        553.8838040083647,
-        713.2018223851919
+        553.883804179728,
+        713.2018180191517
       ],
       "pred_xy_baseline": [
         552.0,
         715.0
       ],
-      "dir": "data/eval\\finfet_00033"
+      "dir": "data/eval/finfet_00033"
     },
     {
       "pair_id": "finfet_00035",
       "style": "finfet",
       "ambiguity_class": "unique",
-      "err": 1.2027299265528268,
+      "err": 1.2027316097394776,
       "err_baseline": 1.7891282793584138,
       "confidence": 0.5333,
-      "pai": 0.8192055752327628,
+      "pai": 0.8192033211334256,
       "decision": "unique",
-      "time_ms": 602.6588999666274,
-      "time_ms_baseline": 40.116799995303154,
-      "scale": 9.97291411282274,
+      "time_ms": 401.09016700080247,
+      "time_ms_baseline": 25.921000000380445,
+      "scale": 9.972914690719191,
       "scale_true": 9.971,
-      "scale_err_pct": 0.019196798944345367,
-      "rotation": -0.3866398512477929,
+      "scale_err_pct": 0.019202594716591814,
+      "rotation": -0.3866387812603307,
       "rotation_true": 0.7051,
       "alias_hit": false,
       "n_candidates": 32,
@@ -1216,14 +1216,14 @@
         709.414
       ],
       "pred_xy": [
-        544.3982529640198,
-        710.5952573269606
+        544.3982527703047,
+        710.595259077847
       ],
       "pred_xy_baseline": [
         545.0,
         711.0
       ],
-      "dir": "data/eval\\finfet_00035"
+      "dir": "data/eval/finfet_00035"
     }
   ]
 }
