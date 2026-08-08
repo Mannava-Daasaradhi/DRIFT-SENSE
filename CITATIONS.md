@@ -15,10 +15,11 @@ quoted in the slide deck until verified. Status legend:
 - ✅ Verified — opened, DOI confirmed resolving to the correct paper.
 - ⏳ Candidate — from TECH-SPEC.md S6's starting list, not yet personally opened.
 
-Progress: 7/10 stages have a verified reference. All ten forward-model
-stages are now implemented (`driftsense/sem_physics.py`). Full citation
-verification of every stage is still due by Gate 2 (A5.3, Aug 11 EOD per
-PLAN.md) - this file is a **living document**.
+Progress: 10/10 stages have at least one verified reference. All ten
+forward-model stages are implemented (`driftsense/sem_physics.py`). One
+optional secondary reference (Rose 1973, stage 9) remains an unverified
+candidate - it sits behind institutional auth Member A can't clear - but
+every stage's primary claim is now personally DOI-verified.
 
 ---
 
@@ -42,7 +43,12 @@ DRIFT-SENSE generates rather than sources its dataset.
 ## Stage-by-stage justification (TECH-SPEC.md S4.2)
 
 ### 1. Geometry — analytic layout at supersample, material ID map
-⏳ Itoh, K. *VLSI Memory Chip Design*, Springer, 2001 (DRAM array pitch/geometry).
+✅ **Verified** — Itoh, K. *VLSI Memory Chip Design*, Springer Series in
+Advanced Microelectronics 5, 2001. DOI:
+[10.1007/978-3-662-04478-0](https://doi.org/10.1007/978-3-662-04478-0)
+(DRAM array pitch/geometry). Opened Aug 8, 2026 - DOI redirects to the
+Springer Nature Link record for this exact title/author/year (login-gated
+full text, redirect target confirms the record).
 ✅ **Verified** — Hisamoto, D., Lee, W.C., Kedzierski, J. et al. "FinFET - a
 self-aligned double-gate MOSFET scalable to 20 nm." *IEEE Trans. Electron
 Devices* 47(12), 2320-2325, 2000. DOI:
@@ -52,9 +58,9 @@ corroborated via Semantic Scholar and ResearchGate.
 
 Models: the actual repeating unit-cell geometry (word-line/bit-line pitch
 for DRAM, fin/gate pitch for FinFET) that the rest of the forward model
-images. `driftsense/layouts.py`'s FinFET pitch/gate-count ranges are still
-generic placeholders, not drawn from this paper's specific figures - the
-Itoh DRAM citation is likewise still unverified pending that pass.
+images. `driftsense/layouts.py`'s DRAM and FinFET pitch/gate-count ranges
+are still generic placeholders, not drawn from either paper's specific
+figures - a known simplification, not a citation gap.
 
 ### 2. Edge distance / signed distance to material boundary
 No separate citation - this is a standard image-processing primitive
@@ -72,8 +78,13 @@ German National Library catalogue.
 electron microscope." *J. Appl. Phys.* 54(11), R1-R18, 1983. DOI:
 [10.1063/1.332840](https://doi.org/10.1063/1.332840). Opened Aug 9, 2026 -
 DOI redirects to the correct AIP Publishing record.
-⏳ Goldstein, J. et al. *Scanning Electron Microscopy and X-Ray
-Microanalysis*, 4th ed., Springer, 2018 (edge/topographic contrast).
+✅ **Verified** — Goldstein, J.I., Newbury, D.E., Michael, J.R. et al.
+*Scanning Electron Microscopy and X-Ray Microanalysis*, 4th ed., Springer,
+2018. DOI: [10.1007/978-1-4939-6676-9](https://doi.org/10.1007/978-1-4939-6676-9)
+(edge/topographic contrast). Opened Aug 8, 2026 - DOI redirects to the
+Springer Nature Link record for this exact title/author/year; independently
+corroborated via the Semantic Scholar and Oxford Academic book-review
+listings found alongside it.
 
 Models: secondary-electron yield rises near a topographic edge because more
 of the interaction volume is within escape depth of a surface, producing
@@ -92,8 +103,12 @@ between independently-rendered reference/search resolutions (see
 
 ### 5. Beam PSF — Gaussian core + Lorentzian skirt
 ✅ Reimer 1998 (as above, stage 3) - beam broadening and interaction volume.
-⏳ Joy, D.C. *Monte Carlo Modeling for Electron Microscopy and
-Microanalysis*, Oxford, 1995 (beam-sample interaction, scattering).
+✅ **Verified** — Joy, D.C. *Monte Carlo Modeling for Electron Microscopy
+and Microanalysis*, Oxford Series in Optical and Imaging Sciences, Oxford
+University Press, 1995. DOI:
+[10.1093/oso/9780195088748.001.0001](https://doi.org/10.1093/oso/9780195088748.001.0001)
+(beam-sample interaction, scattering). Opened Aug 8, 2026 - DOI redirects
+to the correct Oxford Academic book record.
 
 Models: the electron beam is not an infinitesimal point - finite spot size
 (Gaussian core) plus long-range scattered electrons (Lorentzian skirt/tail)
@@ -152,7 +167,11 @@ Aug 7, 2026 - DOI redirects to the Wiley Online Library record for this
 exact title/author/year; independently corroborated via PubMed (PMID
 21898458) and Semantic Scholar.
 ⏳ Rose, A. *Vision: Human and Electronic*, Plenum, 1973 (SNR ∝ √N, the
-Rose criterion).
+Rose criterion). Still unverified: found the Chapter 1 PDF hosted at
+UMich, but it sits behind University of Michigan's Shibboleth
+institutional login, which Member A cannot clear. Kept as a secondary/
+optional reference, not the stage's load-bearing citation - Timischl 2012
+(below) is.
 
 Models: SE detection is an electron-counting process, so its dominant
 noise source is shot noise - variance equal to the mean count - not an
@@ -161,20 +180,24 @@ additive Gaussian. Implemented in `apply_shot_noise` (A3.1):
 entirely.
 
 ### 10. Detector — gain, read noise, saturation, quantization
-⏳ Timischl et al. 2012 (as above) - covers the full detector signal chain,
-not just the shot-noise stage.
+✅ Timischl et al. 2012 (as above, stage 9) - covers the full detector
+signal chain, not just the shot-noise stage.
+✅ **Verified** — Scharf, D. "Secondary Electron Detectors, Image Quality &
+Contrast." *Microscopy and Microanalysis* 4(S2), 256-257, 1998. DOI:
+[10.1017/S1431927600021401](https://doi.org/10.1017/S1431927600021401).
+Opened Aug 8, 2026 - DOI redirects to the correct Oxford Academic/MAM
+record (confirmed title, author, volume, year on the landing page). Note:
+this is a 2-page conference abstract, not a full paper - listed as
+secondary support for the detector-chain concept (scintillator/PMT gain
+stage), not as the quantitative model, which remains Timischl 2012.
 
 Models: after the electron count is converted to a voltage, the detector
 adds its own Gaussian read noise (an electronic noise floor, not
 sample-related), has a finite dynamic range (saturation clipping), and the
-final digitization is 8-bit quantization. Implemented in `apply_detector`
-(A3.1).
-
-Models: after the electron count is converted to a voltage, the detector
-adds its own Gaussian read noise, has a finite dynamic range (saturation
-clipping), and the final digitization is 8-bit quantization - three
-distinct, independently-citable steps this project treats as one stage for
-brevity, matching the Timischl et al. 5-stage detector cascade model.
+final digitization is 8-bit quantization - three distinct,
+independently-citable steps this project treats as one stage for brevity,
+matching the Timischl et al. 5-stage detector cascade model. Implemented
+in `apply_detector` (A3.1).
 
 ---
 
@@ -186,21 +209,47 @@ reminder, even though the decomposition itself is Member B's code
 image decomposition,"** is a real, well-known paper, but its "periodic"
 means *periodic boundary extension* (a trick for FFT edge artifacts), not
 *lattice-periodic content* (repeating device structure). It is the wrong
-citation for this project's core disambiguation idea. The correct citation
-family is standard reciprocal-lattice / Fourier crystallography treatment -
-still ⏳ open, to be selected and verified before Gate 2.
+citation for this project's core disambiguation idea. The correct citation,
+selected and verified:
+
+✅ **Verified** — Zaefferer, S. "New developments of computer-aided
+crystallographic analysis in transmission electron microscopy." *J. Appl.
+Cryst.* 33, 10-25, 2000. DOI:
+[10.1107/S0021889899010894](https://doi.org/10.1107/S0021889899010894).
+Opened Aug 8, 2026 - DOI redirects to the correct IUCr *Journal of Applied
+Crystallography* record; independently corroborated by the Wiley Online
+Library and ResearchGate listings for the same title/author/year/volume.
+
+Models: this is the actual family of technique DRIFT-SENSE's own
+`driftsense/spectral.py` reimplements for a different purpose - indexing a
+diffraction/FFT pattern's peaks against a reciprocal lattice to recover the
+real-space lattice's scale and orientation, the same peak-pair voting this
+project's scale/rotation estimator performs on the search image's spatial
+frequency spectrum. A real crystallographic auto-indexing method, not a
+coincidentally-similar-sounding trick like Moisan's periodic-boundary
+decomposition above.
 
 ---
 
 ## Open items before this file is frozen (A5.3, due Aug 11 EOD)
 
-- [ ] Personally verify: Itoh 2001 (DRAM geometry, stage 1), Goldstein 2018
-      (stage 3), Joy 1995 (stage 5), Rose 1973 (stage 9 - found the book and
-      a chapter PDF but it sits behind institutional auth I can't clear, so
-      still unverified rather than falsely marked done), stage 10's
-      detector-chain reference.
+- [x] ~~Personally verify Itoh 2001 (DRAM geometry, stage 1)~~ - done, DOI
+      10.1007/978-3-662-04478-0.
+- [x] ~~Personally verify Goldstein 2018 (stage 3)~~ - done, DOI
+      10.1007/978-1-4939-6676-9.
+- [x] ~~Personally verify Joy 1995 (stage 5)~~ - done, DOI
+      10.1093/oso/9780195088748.001.0001.
+- [ ] Rose 1973 (stage 9, secondary/optional reference) - found the book
+      and a chapter PDF but it sits behind University of Michigan's
+      Shibboleth institutional login, which I can't clear. Left as ⏳
+      rather than falsely marked done. Not load-bearing: Timischl 2012 is
+      stage 9's verified primary reference.
+- [x] ~~Verify a stage 10 detector-chain reference~~ - done, Scharf 1998
+      (secondary support; Timischl 2012 remains the primary/quantitative
+      reference for the stage).
 - [x] ~~Find and verify a specific Cazaux charging paper~~ - done, stage 7.
-- [ ] Select and verify a reciprocal-lattice/crystallography citation for
-      the periodic/aperiodic decomposition (Moisan 2011 trap, above).
+- [x] ~~Select and verify a reciprocal-lattice/crystallography citation for
+      the periodic/aperiodic decomposition (Moisan 2011 trap, above)~~ -
+      done: Zaefferer 2000, DOI 10.1107/S0021889899010894.
 - [ ] Cross-check this file against Slide 4 and Slide 9 content once drafted
       - they must agree exactly (DATASET-INSTRUCT.png, TECH-SPEC.md S5).
