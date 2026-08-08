@@ -15,10 +15,10 @@ quoted in the slide deck until verified. Status legend:
 - ✅ Verified — opened, DOI confirmed resolving to the correct paper.
 - ⏳ Candidate — from TECH-SPEC.md S6's starting list, not yet personally opened.
 
-Progress: 2/10 stages have a verified reference as of Aug 7 (Day 1). Full
-verification of every stage is due by Gate 2 (A5.3, Aug 11 EOD per PLAN.md)
-- this file is a **living document**, updated across A2.x-A5.x as the
-physics model itself moves from v0 (crude, current) to full (TECH-SPEC S4).
+Progress: 4/10 stages have a verified reference as of Day 3 (A3.1). All ten
+forward-model stages are now implemented (`driftsense/sem_physics.py`).
+Full citation verification of every stage is still due by Gate 2 (A5.3, Aug
+11 EOD per PLAN.md) - this file is a **living document**.
 
 ---
 
@@ -86,35 +86,52 @@ Microanalysis*, Oxford, 1995 (beam-sample interaction, scattering).
 
 Models: the electron beam is not an infinitesimal point - finite spot size
 (Gaussian core) plus long-range scattered electrons (Lorentzian skirt/tail)
-blur the true surface signal before it is ever sampled. Not yet implemented
-- v0 has no PSF at all (see the rasterization-noise note above); lands in A3.1.
+blur the true surface signal before it is ever sampled. Implemented in
+`apply_beam_psf` (A2.3): Gaussian core plus a wide, low-weight second
+Gaussian standing in for the Lorentzian tail.
 
 ### 6. Scan distortion — thermal drift, per-row jitter, vibration
-⏳ Sutton, M.A. et al. "Scanning Electron Microscopy for Quantitative Small
-and Large Deformation Measurements, Parts I & II." *Experimental Mechanics*
-47, 2007 (SEM drift and spatial distortion, and its correction).
+✅ **Verified** — Sutton, M.A., Li, N., Joy, D.C. et al. "Scanning Electron
+Microscopy for Quantitative Small and Large Deformation Measurements Part
+I: SEM Imaging at Magnifications from 200 to 10,000." *Experimental
+Mechanics* 47, 775-787, 2007. DOI:
+[10.1007/s11340-007-9042-z](https://doi.org/10.1007/s11340-007-9042-z).
+Companion: Sutton, M.A., Li, N., Garcia, D. et al. Part II, *Experimental
+Mechanics* 47, 789-804, 2007. DOI:
+[10.1007/s11340-007-9041-0](https://doi.org/10.1007/s11340-007-9041-0).
+Opened Aug 9, 2026 - both DOIs redirect to the correct Springer records;
+independently corroborated via ResearchGate and HAL listings.
 
 Models: this is literally the phenomenon DRIFT-SENSE exists to help
 recover from - motion-stage thermal drift (slow polynomial warp), scan-coil
-jitter (AR(1)-correlated row shift), and fab vibration (sinusoidal
-component) all displace the sampling grid between the reference and search
-captures. Not yet implemented in v0 (`rotation_deg` is fixed at 0.0; no
-warp field yet) - lands in A3.1/A3.2.
+jitter (AR(1)-correlated row shift, since jitter on one row is correlated
+with the row just scanned, not independent noise), and fab vibration
+(sinusoidal component) all displace the sampling grid between the
+reference and search captures. Implemented in `apply_scan_distortion`
+(A3.1) via `cv2.remap` on a displaced sampling grid, with independent RNG
+per capture.
 
 ### 7. Charging — low-frequency field on dielectric regions
-⏳ Cazaux, J. — charge compensation of insulating samples in SEM (specific
-paper TBD; candidate author only, not yet a verified single citation - see
-open item below).
+✅ **Verified** — Cazaux, J. "Charging in scanning electron microscopy
+'from inside and outside'." *Scanning* 26(4), 181-203, 2004. DOI:
+[10.1002/sca.4950260406](https://doi.org/10.1002/sca.4950260406). Opened
+Aug 9, 2026 - DOI redirects to the Wiley Online Library record for this
+exact title/author/year; independently corroborated via ResearchGate.
 
 Models: unremoved surface charge on dielectric regions modulates local
 secondary-electron yield over a slow spatial scale, producing the smooth
-brightness gradients (and occasional bright streaks) real SEM images of
-oxide/dielectric regions show. Not implemented in v0.
+brightness gradients (and occasional bright streaks from a sudden
+discharge event) real SEM images of oxide/dielectric regions show.
+Implemented in `apply_charging` (A3.1); this crude renderer has no
+separate material-ID map, so "dielectric" is approximated as
+background/substrate (below a fixed intensity threshold) rather than a
+true material classification - a known simplification, not yet a full
+metal/dielectric/contact map (see stage 1).
 
 ### 8. Shading — low-order polynomial illumination field
 No separate citation - standard imaging-system vignetting/shading model
 from working-distance and detector-geometry variation, not sample physics.
-Not implemented in v0.
+Implemented in `apply_shading` (A3.1).
 
 ### 9. Shot noise — Poisson, not Gaussian
 ✅ **Verified** — Timischl, F., Date, M., Nemoto, S. "A statistical model of
@@ -126,16 +143,21 @@ exact title/author/year; independently corroborated via PubMed (PMID
 ⏳ Rose, A. *Vision: Human and Electronic*, Plenum, 1973 (SNR ∝ √N, the
 Rose criterion).
 
-Models: SE detection is a electron-counting process, so its dominant noise
-source is shot noise - variance equal to the mean count - not an additive
-Gaussian. `driftsense/sem_physics.py`'s v0 stub uses Gaussian noise
-ONLY as a temporary placeholder (explicitly flagged `v0_placeholder: True`
-in every pair's `meta.json`); the Poisson model (`rng.poisson(dose*delta)/dose`)
-replaces it in A3.1 without changing the module's call signature.
+Models: SE detection is an electron-counting process, so its dominant
+noise source is shot noise - variance equal to the mean count - not an
+additive Gaussian. Implemented in `apply_shot_noise` (A3.1):
+`rng.poisson(dose * signal) / dose`, replacing the v0 Gaussian placeholder
+entirely.
 
 ### 10. Detector — gain, read noise, saturation, quantization
 ⏳ Timischl et al. 2012 (as above) - covers the full detector signal chain,
 not just the shot-noise stage.
+
+Models: after the electron count is converted to a voltage, the detector
+adds its own Gaussian read noise (an electronic noise floor, not
+sample-related), has a finite dynamic range (saturation clipping), and the
+final digitization is 8-bit quantization. Implemented in `apply_detector`
+(A3.1).
 
 Models: after the electron count is converted to a voltage, the detector
 adds its own Gaussian read noise, has a finite dynamic range (saturation
@@ -161,8 +183,9 @@ still ⏳ open, to be selected and verified before Gate 2.
 
 ## Open items before this file is frozen (A5.3, due Aug 11 EOD)
 
-- [ ] Personally verify all remaining ⏳ candidates above, or replace them.
-- [ ] Find and verify a specific Cazaux charging paper (currently author-only).
+- [ ] Personally verify all remaining ⏳ candidates above (stages 1, 3, 5, 9's
+      Rose 1973, 10's detector-chain reference), or replace them.
+- [x] ~~Find and verify a specific Cazaux charging paper~~ - done, stage 7.
 - [ ] Select and verify a reciprocal-lattice/crystallography citation for
       the periodic/aperiodic decomposition (Moisan 2011 trap, above).
 - [ ] Cross-check this file against Slide 4 and Slide 9 content once drafted

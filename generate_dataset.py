@@ -1,16 +1,18 @@
-"""DRIFT-SENSE synthetic pair generator (v0 - crude bootstrap, see PLAN.md S3).
+"""DRIFT-SENSE synthetic pair generator (TECH-SPEC.md S4).
 
 Generates (reference, search) image pairs for the Navigation-Error Recovery
 localization task: a small high-magnification Reference capture and a
 1000x1000 low-magnification Search capture in which the reference pattern
 appears shrunk by ~magnification_ratio somewhere inside.
 
-v0 status (this file): plain DRAM/FinFET line-and-contact geometry, no
-supersampling, no SEM physics beyond independent Gaussian noise per
-capture, no rotation. This intentionally ships fast so Member B and C are
-never blocked (PLAN.md's "Day-1 unblocking trick"). It is replaced in
-place by the full physics model (TECH-SPEC.md S4) across A2.x-A3.x without
-changing the pair-on-disk interface in docs/INTERFACES.md.
+Status: the full ten-stage SEM forward model is implemented (see
+driftsense/sem_physics.py) - supersampled analytic geometry, edge
+brightening, beam PSF, scan distortion, charging, shading, Poisson shot
+noise, and the detector chain - plus inter-capture rotation (+-3 deg) and
+an objective aperiodic-content knob driving ambiguity_class
+(MEMBER-A-CHECKLIST.md A1-A3). The layout geometry itself (DRAM
+lines/contacts, FinFET fins/gates) remains intentionally simple; only the
+imaging physics is "full".
 
 Usage:
     python generate_dataset.py --style dram --num 30 --out data/eval --seed 42
@@ -21,6 +23,7 @@ import argparse
 import json
 import os
 
+import cv2
 import numpy as np
 
 from driftsense.layouts import render_dram, render_finfet
@@ -29,6 +32,18 @@ from driftsense.sem_physics import apply_beam_psf, apply_edge_brightening, sem_f
 REF_SIZE = 1000
 SEARCH_SIZE = 1000
 ZERO_APERIODIC_PROB = 0.15
+
+
+def _rotate_point(x, y, pivot_xy, angle_deg):
+    """Rotate (x, y) the same way cv2.warpAffine(cv2.getRotationMatrix2D(...))
+    would move image CONTENT - i.e. a point that was at (x, y) before the
+    warp ends up here after it. Used to keep alias_positions valid once the
+    search canvas itself gets rotated (see build_pair).
+    """
+    M = cv2.getRotationMatrix2D(pivot_xy, angle_deg, 1.0)
+    vec = np.array([x, y, 1.0])
+    rx, ry = M @ vec
+    return float(rx), float(ry)
 
 
 def _rng_for(seed, pair_index, tag):
@@ -154,6 +169,7 @@ def build_pair(style, pair_index, seed, noiseless=False):
     """
     layout_rng = _rng_for(seed, pair_index, 0)
     m = layout_rng.uniform(9.0, 11.0)
+    rotation_deg = layout_rng.uniform(-3.0, 3.0)
     level, block_world, defects_world, aperiodic_fraction = _make_aperiodic_content(layout_rng)
     (sx, sy), search_origin_world = _placement(layout_rng, m)
 
@@ -164,6 +180,11 @@ def build_pair(style, pair_index, seed, noiseless=False):
     k_edge = layout_rng.uniform(0.4, 1.0)
     lambda_esc_ref = layout_rng.uniform(2.0, 6.0)
     sigma_beam_ref = layout_rng.uniform(2.0, 5.0)
+    # Differential defocus (A3.2): the two captures' focus quality is NOT
+    # simply the scale-driven pixel-size difference - each capture session
+    # gets its own independent jitter on top of that.
+    defocus_jitter_ref = layout_rng.uniform(0.85, 1.15)
+    defocus_jitter_search = layout_rng.uniform(0.85, 1.15)
 
     def _defects_to(scale_origin=None):
         if scale_origin is None:
@@ -237,34 +258,70 @@ def build_pair(style, pair_index, seed, noiseless=False):
     else:
         raise ValueError(f"unknown style {style!r}")
 
+    # A3.2: rotation is a rigid stage/sample transform between the two
+    # captures, logically prior to every imaging artifact below - so it is
+    # applied to the raw rendered geometry, not after edge brightening/PSF.
+    # Reference stays canonical (rotation_deg describes search relative to
+    # reference); rotating around the true-centre PIVOT keeps true_center_xy
+    # valid without recomputing it. This must match the EXACT convention
+    # operationally defined in docs/INTERFACES.md S1 (same
+    # cv2.getRotationMatrix2D + warpAffine construction B's tools/check_gt.py
+    # uses to verify it) - see MEMBER-A-CHECKLIST.md A3.2.
+    if abs(rotation_deg) > 1e-9:
+        rot_matrix = cv2.getRotationMatrix2D((sx, sy), rotation_deg, 1.0)
+        search_clean = cv2.warpAffine(search_clean, rot_matrix, (SEARCH_SIZE, SEARCH_SIZE),
+                                       flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+
     # Stage 3 then stage 5, in that order (TECH-SPEC.md S4.2: the beam blurs
     # what edge-brightening already brightened, not the other way round).
     # lambda_esc/sigma_beam are divided by m for the search capture, same as
     # every other length parameter - the same physical scale covers fewer
-    # search pixels than reference pixels.
+    # search pixels than reference pixels - then each gets its own
+    # independent defocus jitter (A3.2).
     ref_clean = apply_edge_brightening(ref_clean, k_edge, lambda_esc_ref)
-    ref_clean = np.clip(apply_beam_psf(ref_clean, sigma_beam_ref), 0.0, 1.0)
+    ref_clean = np.clip(apply_beam_psf(ref_clean, sigma_beam_ref * defocus_jitter_ref), 0.0, 1.0)
     search_clean = apply_edge_brightening(search_clean, k_edge, max(0.5, lambda_esc_ref / m))
-    search_clean = np.clip(apply_beam_psf(search_clean, max(0.4, sigma_beam_ref / m)), 0.0, 1.0)
+    search_clean = np.clip(apply_beam_psf(
+        search_clean, max(0.4, (sigma_beam_ref / m) * defocus_jitter_search)), 0.0, 1.0)
 
     seed_ref = int(_rng_for(seed, pair_index, 1).integers(0, 2**31 - 1))
     seed_search = int(_rng_for(seed, pair_index, 2).integers(0, 2**31 - 1))
-    noise_std_ref = 0.02
-    noise_std_search = 0.05
-    sem_params.update({"noise_std_ref": noise_std_ref, "noise_std_search": noise_std_search,
+
+    # Stages 6-10 (A3.1). Reference: high dose (low noise), small warp -
+    # a careful high-magnification capture. Search: lower dose (higher
+    # noise, per the brief's explicit "their test search images are
+    # noisier"), larger warp - a faster, lower-quality navigation pass.
+    dose_ref = layout_rng.uniform(150.0, 300.0)
+    dose_search = layout_rng.uniform(30.0, 90.0)
+    warp_amp_ref = layout_rng.uniform(0.5, 2.0)
+    warp_amp_search = layout_rng.uniform(1.0, 3.0)
+    charging_amplitude = layout_rng.uniform(0.1, 0.3)
+    shading_amplitude = layout_rng.uniform(0.1, 0.25)
+
+    sem_params.update({"dose_ref": round(float(dose_ref), 2),
+                        "dose_search": round(float(dose_search), 2),
+                        "warp_amplitude_ref": round(float(warp_amp_ref), 4),
+                        "warp_amplitude_search": round(float(warp_amp_search), 4),
+                        "charging_amplitude": round(float(charging_amplitude), 4),
+                        "shading_amplitude": round(float(shading_amplitude), 4),
                         "aperiodic_content_level": round(float(level), 4),
                         "aperiodic_energy_fraction": round(float(aperiodic_fraction), 5),
                         "k_edge": round(float(k_edge), 4),
                         "lambda_esc_ref": round(float(lambda_esc_ref), 4),
                         "sigma_beam_ref": round(float(sigma_beam_ref), 4),
-                        "v0_placeholder": True})
+                        "defocus_jitter_ref": round(float(defocus_jitter_ref), 4),
+                        "defocus_jitter_search": round(float(defocus_jitter_search), 4)})
 
     if noiseless:
         ref_u8 = (np.clip(ref_clean, 0, 1) * 255.0).round().astype(np.uint8)
         search_u8 = (np.clip(search_clean, 0, 1) * 255.0).round().astype(np.uint8)
     else:
-        ref_u8 = sem_forward(ref_clean, np.random.default_rng(seed_ref), noise_std_ref)
-        search_u8 = sem_forward(search_clean, np.random.default_rng(seed_search), noise_std_search)
+        ref_u8 = sem_forward(ref_clean, np.random.default_rng(seed_ref), dose=dose_ref,
+                              warp_amplitude=warp_amp_ref, charging_amplitude=charging_amplitude,
+                              shading_amplitude=shading_amplitude)
+        search_u8 = sem_forward(search_clean, np.random.default_rng(seed_search), dose=dose_search,
+                                 warp_amplitude=warp_amp_search, charging_amplitude=charging_amplitude,
+                                 shading_amplitude=shading_amplitude)
 
     # Objective criterion (TECH-SPEC.md S4.1), not a defect-count vibe: how much
     # of the reference window's area is aperiodic content that survives the
@@ -284,15 +341,23 @@ def build_pair(style, pair_index, seed, noiseless=False):
     if defects_world:
         aperiodic_content.append("defect")
 
+    # Aliases are OTHER points on the same (pre-rotation) axis-aligned
+    # lattice - once the search canvas is rotated around the true-centre
+    # pivot, they move with it exactly like every other pixel did.
+    aliases = _alias_positions(style, (sx, sy), (lattice_period_search_px[0],
+                                lattice_period_search_px[1] or lattice_period_search_px[0]))
+    if abs(rotation_deg) > 1e-9:
+        aliases = [list(_rotate_point(ax, ay, (sx, sy), rotation_deg)) for ax, ay in aliases]
+        aliases = [[round(ax, 2), round(ay, 2)] for ax, ay in aliases]
+
     meta = {
         "pair_id": f"{style}_{pair_index:05d}",
         "style": style,
         "true_center_xy": [round(float(sx), 3), round(float(sy), 3)],
         "magnification_ratio": round(float(m), 4),
-        "rotation_deg": 0.0,
+        "rotation_deg": round(float(rotation_deg), 4),
         "lattice_period_search_px": lattice_period_search_px,
-        "alias_positions": _alias_positions(style, (sx, sy), (lattice_period_search_px[0],
-                            lattice_period_search_px[1] or lattice_period_search_px[0])),
+        "alias_positions": aliases,
         "ambiguity_class": ambiguity_class,
         "aperiodic_content": aperiodic_content,
         "sem_params": sem_params,
