@@ -161,15 +161,20 @@ def _alias_positions(style, true_center_xy, pitch_search_xy, size=SEARCH_SIZE, m
     return aliases
 
 
-def build_pair(style, pair_index, seed, noiseless=False):
+def build_pair(style, pair_index, seed, noiseless=False, ood=False):
     """Build one (reference_u8, search_u8, meta) triple. Pure function - no disk I/O.
 
     noiseless=True skips the sensor-noise stage entirely, for
     tools/check_gt.py's coordinate-convention self-check.
+
+    ood=True (A5.2): a generator config NEVER used for tuning - unseen
+    pitches, wider rotation, a wider magnification bracket, and 2-3x the
+    noise (lower dose). One-shot honesty test: do not tune B's or C's
+    parameters against this set.
     """
     layout_rng = _rng_for(seed, pair_index, 0)
-    m = layout_rng.uniform(9.0, 11.0)
-    rotation_deg = layout_rng.uniform(-3.0, 3.0)
+    m = layout_rng.uniform(8.0, 13.0) if ood else layout_rng.uniform(9.0, 11.0)
+    rotation_deg = layout_rng.uniform(-6.0, 6.0) if ood else layout_rng.uniform(-3.0, 3.0)
     level, block_world, defects_world, aperiodic_fraction = _make_aperiodic_content(layout_rng)
     (sx, sy), search_origin_world = _placement(layout_rng, m)
 
@@ -205,8 +210,8 @@ def build_pair(style, pair_index, seed, noiseless=False):
     search_scale_origin = (search_origin_world[0], search_origin_world[1], m)
 
     if style == "dram":
-        pitch_x_ref = layout_rng.uniform(45, 90)
-        pitch_y_ref = layout_rng.uniform(45, 90)
+        pitch_x_ref = layout_rng.uniform(95, 150) if ood else layout_rng.uniform(45, 90)
+        pitch_y_ref = layout_rng.uniform(95, 150) if ood else layout_rng.uniform(45, 90)
         line_width_ref = layout_rng.uniform(3, 6)
         contact_radius_ref = layout_rng.uniform(4, 8)
         phase_x_ref = layout_rng.uniform(0, pitch_x_ref)
@@ -230,7 +235,7 @@ def build_pair(style, pair_index, seed, noiseless=False):
             "line_width_ref": line_width_ref, "contact_radius_ref": contact_radius_ref,
         }
     elif style == "finfet":
-        pitch_fin_ref = layout_rng.uniform(20, 40)
+        pitch_fin_ref = layout_rng.uniform(45, 65) if ood else layout_rng.uniform(20, 40)
         fin_width_ref = layout_rng.uniform(3, 6)
         n_gates = layout_rng.integers(1, 3)
         gate_width_ref = layout_rng.uniform(15, 30)
@@ -293,6 +298,12 @@ def build_pair(style, pair_index, seed, noiseless=False):
     # noisier"), larger warp - a faster, lower-quality navigation pass.
     dose_ref = layout_rng.uniform(150.0, 300.0)
     dose_search = layout_rng.uniform(30.0, 90.0)
+    if ood:
+        # Poisson relative noise ~ 1/sqrt(dose), so "2-3x the noise" needs
+        # dose divided by (2-3)**2 = 4-9x, not 2-3x.
+        noise_divisor = layout_rng.uniform(4.0, 9.0)
+        dose_ref /= noise_divisor
+        dose_search /= noise_divisor
     warp_amp_ref = layout_rng.uniform(0.5, 2.0)
     warp_amp_search = layout_rng.uniform(1.0, 3.0)
     charging_amplitude = layout_rng.uniform(0.1, 0.3)
@@ -306,6 +317,7 @@ def build_pair(style, pair_index, seed, noiseless=False):
                         "shading_amplitude": round(float(shading_amplitude), 4),
                         "aperiodic_content_level": round(float(level), 4),
                         "aperiodic_energy_fraction": round(float(aperiodic_fraction), 5),
+                        "ood": bool(ood),
                         "k_edge": round(float(k_edge), 4),
                         "lambda_esc_ref": round(float(lambda_esc_ref), 4),
                         "sigma_beam_ref": round(float(sigma_beam_ref), 4),
@@ -367,9 +379,15 @@ def build_pair(style, pair_index, seed, noiseless=False):
     return ref_u8, search_u8, meta
 
 
-def generate(style, num, out_dir, seed):
+def generate(style, num, out_dir, seed, ood=False):
+    import sys
+
     import cv2
 
+    if os.path.isdir(out_dir) and os.listdir(out_dir):
+        print(f"warning: {out_dir!r} already exists and is not empty - "
+              f"writing into it (existing pair_ids will be overwritten, "
+              f"anything else left alone)", file=sys.stderr)
     os.makedirs(out_dir, exist_ok=True)
     styles = []
     for i in range(num):
@@ -379,7 +397,7 @@ def generate(style, num, out_dir, seed):
             styles.append(style)
 
     for i, s in enumerate(styles):
-        ref_u8, search_u8, meta = build_pair(s, i, seed)
+        ref_u8, search_u8, meta = build_pair(s, i, seed, ood=ood)
         pair_dir = os.path.join(out_dir, meta["pair_id"])
         os.makedirs(pair_dir, exist_ok=True)
         cv2.imwrite(os.path.join(pair_dir, "reference.png"), ref_u8)
@@ -398,10 +416,13 @@ def main():
     parser.add_argument("--num", type=int, required=True, help="Number of pairs to generate.")
     parser.add_argument("--out", required=True, help="Output directory (created if missing).")
     parser.add_argument("--seed", type=int, required=True, help="Master seed; reproducible per pair.")
+    parser.add_argument("--ood", action="store_true",
+                         help="A5.2: out-of-distribution config never used for tuning - "
+                              "unseen pitches, +-6deg rotation, m in [8,13], 2-3x the noise.")
     args = parser.parse_args()
 
-    n = generate(args.style, args.num, args.out, args.seed)
-    print(f"wrote {n} pairs to {args.out}")
+    n = generate(args.style, args.num, args.out, args.seed, ood=args.ood)
+    print(f"wrote {n} pairs to {args.out}" + (" (OOD config)" if args.ood else ""))
 
 
 if __name__ == "__main__":
