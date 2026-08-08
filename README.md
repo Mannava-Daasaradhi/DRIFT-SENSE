@@ -131,13 +131,17 @@ claiming high accuracy on this subset is either lucky or not measuring it.
 
 | | |
 |---|---|
-| Time per pair | **~1.1–1.4 s** on CPU (1000x1000 search, ~100x100 template) |
+| Time per pair | **~0.6 s** median, 0.68 s worst, on CPU (1000x1000 search, ~100x100 template) |
 | Magnification estimate | median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | 0.0% |
+| Confidence calibration | ECE **0.079** on `data/eval` (fitted only on `data/dev_v0` + `data/ood`) |
 | Re-ranker checkpoint | 0.56 MB, ~217k parameters |
 
 Figures land in `figures/` (accuracy vs baseline, error CDF, confidence
-reliability diagram, success case, honest failure case).
+reliability diagram, success case, honest failure case — each also generated
+against `data/ood`, suffixed `_ood`, which is the more compelling comparison
+since the baseline's assumptions happen to nearly hold on the in-distribution
+draw).
 
 ---
 

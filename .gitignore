@@ -25,6 +25,13 @@ figures/*
 !figures/reliability.png
 !figures/success_case.png
 !figures/honest_failure_case.png
+# Same set, run against the held-out OOD config -- the more honest comparison
+# against the baseline, since the in-distribution draw happens to sit near the
+# baseline's built-in assumptions (m~=10, rotation~=0).
+!figures/accuracy_vs_baseline_ood.png
+!figures/error_cdf_ood.png
+!figures/reliability_ood.png
+!figures/honest_failure_case_ood.png
 
 # Evaluation output is committed as evidence: every number quoted in the README
 # and on the slides must be traceable to a file in the repository.

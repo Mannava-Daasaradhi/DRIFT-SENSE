@@ -157,6 +157,26 @@ def confidence_from_features(margin: float, pai: float, spectral_quality: float,
     return float(1.0 / (1.0 + math.exp(-z)))
 
 
+#: Recalibration table, fitted by `tools/fit_calibration.py` on `data/dev_v0` +
+#: `data/ood` (60 examples) — never on the frozen `data/eval` set, which exists
+#: to *measure* calibration, not to be fitted to it.
+#:
+#: The hand-set logistic above is monotone in the right features but was
+#: systematically under-confident: every reliability bin sat above the
+#: diagonal (predicted 0.10-0.58, observed 0.27-1.00). This is a quantile-
+#: binned isotonic map from that raw value to the empirical accuracy actually
+#: observed at that confidence level. Re-fit whenever the feature weights above
+#: change: a table fitted to one confidence function does not transfer to a
+#: different one.
+CALIB_X = [0.0, 0.0959, 0.1232, 0.1559, 0.2413, 0.4275, 1.0]
+CALIB_Y = [0.25, 0.25, 0.25, 0.75, 0.9167, 0.92, 0.92]
+
+
+def calibrate_confidence(raw: float) -> float:
+    """Map a raw `confidence_from_features` value onto its empirical accuracy."""
+    return float(np.clip(np.interp(float(raw), CALIB_X, CALIB_Y), 0.0, 1.0))
+
+
 # --------------------------------------------------------------------------- #
 # the decision
 # --------------------------------------------------------------------------- #
@@ -234,6 +254,12 @@ def decide(cands: list[Candidate], search_shape: tuple[int, int],
         # estimate — it is right more often than the centre of the image is —
         # but it is not evidence-backed, and the confidence must say so.
         conf = min(conf, 0.25)
+
+    # Recalibrate last: the caps above are decision-specific ceilings on the raw
+    # feature score, and the fitted table (data/dev_v0 + data/ood) maps exactly
+    # that final value onto its observed accuracy — calibrating before the caps
+    # would fit the table to a number this function does not actually return.
+    conf = calibrate_confidence(conf)
 
     return Decision(float(chosen.x), float(chosen.y), decision, float(conf),
                     float(pai), len(tied), ranked,
