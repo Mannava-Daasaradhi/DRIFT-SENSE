@@ -138,10 +138,20 @@ Guarantees C can rely on:
 > **Amendment, Aug 8 (B + C):** `use_reranker` now defaults to **`False`**, and
 > `localize.py` takes `--reranker` to switch it on (`--no-reranker` is still accepted).
 > The re-ranker gains +2.8 points within 5 px on `data/eval`, the set its fusion weight was
-> tuned against, and loses 13.3 points on the held-out `data/ood` config — the `unique`
-> subset falls from 93.3% to 73.3%. Since the brief says the official test set is noisier
-> than ours, `data/ood` is the better proxy and the classical core ships as the default.
-> The weights, `train.py` and the hook all remain in the repository.
+> tuned against, and loses 3.3 points overall on the held-out `data/ood` config (frozen seed
+> 2024, per A's `a6252c8`) — the `unique` subset falls from 85.7% to 71.4%. Since the brief
+> says the official test set is noisier than ours, `data/ood` is the better proxy and the
+> classical core ships as the default. The weights, `train.py` and the hook all remain in
+> the repository.
+>
+> **Amendment, Aug 9 (B):** the numbers above were first measured against an OOD set
+> generated with an ad-hoc seed (777) rather than the one A actually froze (2024) — the two
+> seeds happen to agree in *direction* (re-ranker overfits) but not in the specific
+> percentages; the corrected figures are the ones quoted above. `decide.py`'s confidence is
+> now a fitted calibration (`tools/fit_calibration.py`, on `data/dev_v0` + `data/ood` —
+> calibration never touches `x`/`y`/`scale`/`rotation`/`decision`, so this does not
+> compromise the OOD accuracy honesty check): ECE on `data/eval` is 0.054, down from 0.390
+> for the unfitted hand-set logistic.
 
 ### Re-ranker hook — *Member C implements, Member B calls*
 

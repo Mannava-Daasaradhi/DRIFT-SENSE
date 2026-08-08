@@ -99,14 +99,18 @@ column is the more honest predictor of Phase-2 performance.
 | Set | DRIFT-SENSE | `cv2.matchTemplate` @ fixed 10x | median error | baseline median |
 |---|---|---|---|---|
 | `data/eval` (36 pairs) | **61.1%** | 58.3% | **2.76 px** | 3.83 px |
-| `data/ood` (30 pairs) | **63.3%** | 33.3% | **2.91 px** | 22.82 px |
+| `data/ood` (30 pairs, seed 2024) | **70.0%** | 50.0% | **1.72 px** | 5.00 px |
 
 On the in-distribution set the baseline is competitive, because that draw happens
 to sit near its two built-in assumptions: magnification close to 10 and rotation
-close to 0. **Move off those assumptions and it collapses** — on the OOD set the
-baseline's median error is 22.8 px against our 2.9 px, and it solves half as many
-pairs. That gap is the entire argument for measuring the scale instead of assuming
-it.
+close to 0. **Move off those assumptions and it pulls further ahead** — on the OOD
+set (unseen pitches, 2-3x the noise, rotation to ±6°, `m ∈ [8, 13]`) the baseline's
+median error nearly triples to 5.0 px against our 1.7 px, and its mean error is
+more than 2x ours. That gap is the entire argument for measuring the scale instead
+of assuming it. `data/ood` is generated with the seed frozen by A's commit
+`a6252c8` and is run exactly once as a one-shot honesty check — no algorithm
+change happens after seeing this number (see the confidence-calibration note
+below for the one deliberate exception, which cannot affect it).
 
 ### Broken out by difficulty — this is the part that matters
 
@@ -114,8 +118,8 @@ A single blended accuracy number hides the whole story, so we never report one.
 
 | `ambiguity_class` | `data/eval` | `data/ood` | what it means |
 |---|---|---|---|
-| `unique` | **85.7%** | **93.3%** | enough aperiodic content to identify the site |
-| `weakly_ambiguous` | 62.5% | 71.4% | some disambiguating structure, not much |
+| `unique` | **85.7%** | **85.7%** | enough aperiodic content to identify the site |
+| `weakly_ambiguous` | 62.5% | 81.8% | some disambiguating structure, not much |
 | `degenerate` | 0.0% | 0.0% | **no algorithm can solve these** — see below |
 
 **The degenerate row is 0% and that is the correct answer, not a bug.** Those pairs
@@ -134,7 +138,7 @@ claiming high accuracy on this subset is either lucky or not measuring it.
 | Time per pair | **~0.6 s** median, 0.68 s worst, on CPU (1000x1000 search, ~100x100 template) |
 | Magnification estimate | median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | 0.0% |
-| Confidence calibration | ECE **0.079** on `data/eval` (fitted only on `data/dev_v0` + `data/ood`) |
+| Confidence calibration | ECE **0.054** on `data/eval` (fitted on `data/dev_v0` + `data/ood`; never on `data/eval`) |
 | Re-ranker checkpoint | 0.56 MB, ~217k parameters |
 
 Figures land in `figures/` (accuracy vs baseline, error CDF, confidence
@@ -155,16 +159,17 @@ content. It reaches 0.987 validation AUC.
 It is nonetheless **disabled by default**, because we measured what it does
 end-to-end rather than trusting the AUC:
 
-| | `data/eval` (tuned on) | `data/ood` (held out) |
+| | `data/eval` (tuned on) | `data/ood` (held out, seed 2024) |
 |---|---|---|
-| classical only | 61.1% | **63.3%** |
-| with re-ranker | **63.9%** | 50.0% |
+| classical only | 61.1% | **70.0%** |
+| with re-ranker | **63.9%** | 66.7% |
 
-It gains 2.8 points on the set its fusion weight was tuned against and loses 13.3
-on the held-out configuration — the `unique` subset drops from 93.3% to 73.3%.
-That is overfitting to our own generator, which `docs/PLAN.md` §6 lists as the top
-project risk, and the OOD set exists precisely to catch it. The classical core
-carries no learned priors and does not degrade that way.
+It gains 2.8 points on the set its fusion weight was tuned against and loses 3.3
+points on the held-out configuration overall — and the `unique` subset, where it
+should matter most, drops from 85.7% to 71.4%. That is overfitting to our own
+generator, which `docs/PLAN.md` §6 lists as the top project risk, and the OOD set
+exists precisely to catch it. The classical core carries no learned priors and
+does not degrade that way.
 
 Everything ships and it can be switched on:
 

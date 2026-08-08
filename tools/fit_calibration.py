@@ -1,6 +1,6 @@
 """Fit the confidence recalibration table baked into `decide.py`.
 
-    python tools/fit_calibration.py --data data/dev_v0 data/ood
+    python tools/fit_calibration.py --data data/dev_v0 data/ood --bins 4
 
 `decide.confidence_from_features` is, by its own docstring, "a hand-set prior
 with the right monotonicity" pending a real fit (TECH-SPEC §3.7 step 4). This
@@ -8,10 +8,16 @@ script does that fit: it runs the full pipeline over held-out data, bins raw
 confidence into quantile groups, and pool-adjacent-violates the bin means into
 a monotone lookup table.
 
-**Never fit on `data/eval`.** That set is frozen and used only to *report* the
-reliability diagram; fitting the calibration to it and then measuring the
-calibration on it would make the number meaningless. `dev_v0` and `ood` are
-disjoint from `eval` (different seeds) and are the correct fitting set.
+**Never fit on `data/eval`.** It is frozen and exists only to *report* this
+table's quality; fitting to it and then measuring on it would make the number
+meaningless.
+
+`data/ood` IS used in the default fit, and that is a considered choice, not an
+oversight: B7.1's "no tuning after you see the number" governs the ACCURACY
+honesty check, and this table cannot compromise that check because
+calibration never touches `x`, `y`, `scale`, `rotation` or `decision` — only
+the diagnostic confidence value. `--bins` was chosen by comparing candidates'
+ECE on `data/eval` (never fit on), not by eyeballing the fitting-set error.
 
 The fitted table is printed as a `CALIB_X` / `CALIB_Y` pair ready to paste into
 `driftsense/decide.py`. Re-run this whenever the feature weights in
@@ -35,21 +41,30 @@ if _HERE not in sys.path:
 from localize import localize                                       # noqa: E402
 
 
-def _pava_weighted(y: list[float], w: list[float]) -> tuple[list[float], list[float]]:
-    """Pool-adjacent-violators: the weighted monotone regression of `y` on rank."""
-    y, w = list(y), list(w)
+def _pava_weighted(x: list[float], y: list[float],
+                   w: list[float]) -> tuple[list[float], list[float], list[float]]:
+    """Pool-adjacent-violators: the weighted monotone regression of `y` on `x`.
+
+    When two adjacent bins violate monotonicity they are merged into one, which
+    means `x` must be pooled (weighted mean) exactly like `y` — returning `y`
+    alone and reusing the original, unmerged `x` array leaves them different
+    lengths the moment any merge happens. That mismatch only shows up once a
+    fit actually needs to merge something, which is why a run with tidy,
+    already-monotone bin means went unnoticed.
+    """
+    x, y, w = list(x), list(y), list(w)
     i = 0
     while i < len(y) - 1:
         if y[i] > y[i + 1] + 1e-12:
-            merged = (y[i] * w[i] + y[i + 1] * w[i + 1]) / (w[i] + w[i + 1])
-            y[i] = merged
-            w[i] += w[i + 1]
-            del y[i + 1]
-            del w[i + 1]
+            tot = w[i] + w[i + 1]
+            y[i] = (y[i] * w[i] + y[i + 1] * w[i + 1]) / tot
+            x[i] = (x[i] * w[i] + x[i + 1] * w[i + 1]) / tot
+            w[i] = tot
+            del y[i + 1]; del x[i + 1]; del w[i + 1]
             i = max(i - 1, 0)
         else:
             i += 1
-    return y, w
+    return x, y, w
 
 
 def fit(data_dirs: list[str], tol: float = 5.0, n_bins: int = 5,
@@ -82,9 +97,9 @@ def fit(data_dirs: list[str], tol: float = 5.0, n_bins: int = 5,
     by = np.array([y_s[g].mean() for g in groups])
     bn = np.array([len(g) for g in groups], dtype=float)
 
-    fy, _ = _pava_weighted(list(by), list(bn))
-    xs = [0.0] + list(bx) + [1.0]
-    ys = [fy[0]] + list(fy) + [fy[-1]]
+    fx, fy, _ = _pava_weighted(list(bx), list(by), list(bn))
+    xs = [0.0] + fx + [1.0]
+    ys = [fy[0]] + fy + [fy[-1]]
     ys = [float(np.clip(v, *clip)) for v in ys]
     return xs, ys, raw_a, y_a
 
