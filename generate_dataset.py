@@ -161,7 +161,7 @@ def _alias_positions(style, true_center_xy, pitch_search_xy, size=SEARCH_SIZE, m
     return aliases
 
 
-def build_pair(style, pair_index, seed, noiseless=False, ood=False):
+def build_pair(style, pair_index, seed, noiseless=False, ood=False, noise_divisor=1.0):
     """Build one (reference_u8, search_u8, meta) triple. Pure function - no disk I/O.
 
     noiseless=True skips the sensor-noise stage entirely, for
@@ -171,6 +171,11 @@ def build_pair(style, pair_index, seed, noiseless=False, ood=False):
     pitches, wider rotation, a wider magnification bracket, and 2-3x the
     noise (lower dose). One-shot honesty test: do not tune B's or C's
     parameters against this set.
+
+    noise_divisor (A6.1, noise-ladder sweep): divides dose by this factor,
+    applied AFTER the normal randomized dose draw so geometry, placement,
+    and every other parameter stay byte-identical across a sweep - only
+    SNR changes. Not drawn from layout_rng on purpose, for that reason.
     """
     layout_rng = _rng_for(seed, pair_index, 0)
     m = layout_rng.uniform(8.0, 13.0) if ood else layout_rng.uniform(9.0, 11.0)
@@ -301,9 +306,11 @@ def build_pair(style, pair_index, seed, noiseless=False, ood=False):
     if ood:
         # Poisson relative noise ~ 1/sqrt(dose), so "2-3x the noise" needs
         # dose divided by (2-3)**2 = 4-9x, not 2-3x.
-        noise_divisor = layout_rng.uniform(4.0, 9.0)
-        dose_ref /= noise_divisor
-        dose_search /= noise_divisor
+        ood_noise_divisor = layout_rng.uniform(4.0, 9.0)
+        dose_ref /= ood_noise_divisor
+        dose_search /= ood_noise_divisor
+    dose_ref /= noise_divisor
+    dose_search /= noise_divisor
     warp_amp_ref = layout_rng.uniform(0.5, 2.0)
     warp_amp_search = layout_rng.uniform(1.0, 3.0)
     charging_amplitude = layout_rng.uniform(0.1, 0.3)

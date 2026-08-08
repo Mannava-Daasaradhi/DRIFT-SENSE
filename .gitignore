@@ -19,3 +19,4 @@ weights/*.pt
 # slide-deck assets (e.g. the SEM physics stage strip, A2.3) are committed.
 figures/*
 !figures/sem_physics_stages.png
+!figures/noise_ladder_accuracy.png
