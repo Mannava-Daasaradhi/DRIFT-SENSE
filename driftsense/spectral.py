@@ -504,11 +504,24 @@ def estimate_scale_rotation(ref: np.ndarray, search: np.ndarray,
     best_score = max(scores) if scores else 0.0
     if best_score <= 0.0:
         return ScaleRotation(0.0, 0.0, 0.0, [], "fallback", 0.0)
+    best_scale = hyps[int(np.argmax(scores))][0]
 
     # Candidates scoring close to the winner are the genuine symmetry-equivalent
-    # solutions: the spectrum cannot separate them and neither should we.
-    keep = [(h, sc) for h, sc in zip(hyps, scores) if sc >= 0.72 * best_score]
-    rest = [(h, sc) for h, sc in zip(hyps, scores) if sc < 0.72 * best_score]
+    # solutions: the spectrum cannot separate them and neither should we. BUT
+    # "symmetry-equivalent" means the SAME scale at a crystallographically
+    # different rotation (DRAM's 4-fold symmetry, FinFET's 2-fold) - it does
+    # NOT mean a different (e.g. octave-wrong) scale that happens to clear the
+    # score threshold too. Without this scale gate, a half/double-scale
+    # impostor can win the "prefer smallest rotation" tiebreak below purely
+    # because its spurious rotation happens to be small - confirmed on a
+    # FinFET pair where the octave-wrong scale scored 0.146 (rotation 1.3 deg)
+    # against the true scale's 0.153 (rotation 7.7 deg): the impostor's score
+    # cleared 0.72x-of-best, then won on rotation alone (GH issue #2).
+    scale_tol = 0.05
+    def _same_scale(sc, h):
+        return sc >= 0.72 * best_score and abs(h[0] - best_scale) <= scale_tol * best_scale
+    keep = [(h, sc) for h, sc in zip(hyps, scores) if _same_scale(sc, h)]
+    rest = [(h, sc) for h, sc in zip(hyps, scores) if not _same_scale(sc, h)]
     # among equally-good hypotheses prefer the smallest rotation: inter-visit
     # stage drift is a few degrees, not ninety
     keep.sort(key=lambda t: abs(t[0][1]))
