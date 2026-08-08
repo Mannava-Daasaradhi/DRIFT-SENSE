@@ -134,7 +134,7 @@ def localize(reference_path: str, search_path: str,
              weights_path: str | None = None) -> dict:
     """Locate the reference pattern inside the search image. Never raises.
 
-    Returns the dict frozen in docs/INTERFACES.md §2 — all twelve keys always
+    Returns the dict frozen in docs/INTERFACES.md §2 — all nine keys always
     present. `x`, `y` are the CENTRE of the matched region in search-image
     pixels, sub-pixel, with x to the right and y downward.
     """
@@ -191,8 +191,6 @@ def localize(reference_path: str, search_path: str,
             cands, diag = scale_sweep(ref, search,
                                       rotations=(0.0, -2.0, 2.0))
             used_fallback = True
-            best_scale = diag.get("scale", 0.0)
-            best_rot = diag.get("rotation", 0.0)
         else:
             # Lattice frequencies of the SEARCH image drive the decomposition.
             # The template has already been rescaled into search-pixel units by
@@ -212,11 +210,6 @@ def localize(reference_path: str, search_path: str,
                 _log("[info] no correlation peaks; falling back to scale sweep")
                 cands, diag = scale_sweep(ref, search, rotations=(0.0, -2.0, 2.0))
                 used_fallback = True
-                best_scale = diag.get("scale", 0.0)
-                best_rot = diag.get("rotation", 0.0)
-            else:
-                best_scale = cands[0].scale
-                best_rot = cands[0].rotation
 
         if not cands:
             _log("[warn] no candidates at all; returning search-image centre")
@@ -241,8 +234,11 @@ def localize(reference_path: str, search_path: str,
             "confidence": float(d.confidence),
             "pai": float(d.pai),
             "candidates": [c.as_dict(i) for i, c in enumerate(d.ranked[:32])],
-            "scale": float(best_scale),
-            "rotation": float(best_rot),
+            # From the CHOSEN candidate (post tie-break, post re-rank), not
+            # cands[0] pre-rerank - otherwise scale/rotation could describe a
+            # different match than the returned x/y once a re-ranker is live.
+            "scale": float(d.scale),
+            "rotation": float(d.rotation),
             "decision": d.decision,
             "time_ms": (time.perf_counter() - t0) * 1e3,
         }
@@ -251,10 +247,9 @@ def localize(reference_path: str, search_path: str,
         # PLAN.md Rule 2. A crash on pair 7 of 30 must not cost pairs 8-30.
         _log(f"[error] {type(e).__name__}: {e}")
         try:
-            import cv2
-            a = cv2.imread(search_path, cv2.IMREAD_UNCHANGED)
-            if a is not None:
-                return _fallback(a.shape[1] / 2.0, a.shape[0] / 2.0, t0)
+            from driftsense.preprocess import load_gray
+            a = load_gray(search_path)
+            return _fallback(a.shape[1] / 2.0, a.shape[0] / 2.0, t0)
         except Exception:
             pass
         return _fallback(0.0, 0.0, t0)
@@ -264,7 +259,7 @@ def localize(reference_path: str, search_path: str,
 # CLI (docs/INTERFACES.md §3)
 # --------------------------------------------------------------------------- #
 
-def _parse_args(argv: list[str]) -> tuple[str, str, bool, bool]:
+def _parse_args(argv: list[str]) -> tuple[str, str, bool, bool, str | None]:
     """Accept both invocation styles. We do not control how they will call this."""
     p = argparse.ArgumentParser(
         description="Locate a reference pattern inside a search image.",
@@ -293,18 +288,13 @@ def _parse_args(argv: list[str]) -> tuple[str, str, bool, bool]:
     if ref is None or search is None:
         p.error("need a reference image and a search image "
                 "(positionally or via --ref/--search)")
-    return ref, search, a.json, a.no_reranker
+    return ref, search, a.json, a.no_reranker, a.weights
 
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
-    weights = None
     try:
-        ref, search, as_json, no_rr = _parse_args(argv)
-        # re-parse only for the weights path, keeping _parse_args' return simple
-        for i, tok in enumerate(argv):
-            if tok == "--weights" and i + 1 < len(argv):
-                weights = argv[i + 1]
+        ref, search, as_json, no_rr, weights = _parse_args(argv)
         res = localize(ref, search, use_reranker=not no_rr, weights_path=weights)
     except SystemExit:
         raise                                  # argparse already explained itself

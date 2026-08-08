@@ -611,7 +611,7 @@ def fourier_mellin_scale_rotation(ref: np.ndarray, search: np.ndarray,
         mr = log_magnitude_spectrum(ref)
         ms = log_magnitude_spectrum(search)
 
-        def _logpolar(m: np.ndarray) -> np.ndarray:
+        def _logpolar(m: np.ndarray) -> tuple[np.ndarray, float]:
             h, w = m.shape
             centre = (w / 2.0, h / 2.0)
             maxr = min(h, w) / 2.0
@@ -631,6 +631,10 @@ def fourier_mellin_scale_rotation(ref: np.ndarray, search: np.ndarray,
         scale = float(math.exp(dx / Mconst))
         rot = float(dy * 360.0 / n_ang)
         rot = (rot + 180.0) % 360.0 - 180.0
+        # Same spectrum-angle -> OpenCV-rotation convention as
+        # estimate_scale_rotation (negate the measured spectrum angle) - the
+        # two producers of ScaleRotation.rotation must agree.
+        rot = -rot
         if not (np.isfinite(scale) and scale > 1e-6):
             return ScaleRotation(0.0, 0.0, 0.0, [], "fourier_mellin", 0.0)
         return ScaleRotation(scale, rot, float(np.clip(resp, 0.0, 1.0)),

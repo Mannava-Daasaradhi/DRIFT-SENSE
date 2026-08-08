@@ -32,7 +32,8 @@ class Decision:
     """Outcome of the decision stage."""
 
     def __init__(self, x: float, y: float, decision: str, confidence: float,
-                 pai: float, tie_size: int, ranked: list[Candidate]):
+                 pai: float, tie_size: int, ranked: list[Candidate],
+                 scale: float = 0.0, rotation: float = 0.0):
         self.x = x
         self.y = y
         self.decision = decision           # unique | tie_broken_by_center | fallback
@@ -40,6 +41,12 @@ class Decision:
         self.pai = pai
         self.tie_size = tie_size
         self.ranked = ranked
+        # scale/rotation of the CHOSEN candidate (post tie-break, post
+        # re-rank) - not cands[0] pre-rerank, so these always describe the
+        # same match as x/y. See docs/INTERFACES.md S2: "scale"/"rotation"
+        # must correspond to the returned x/y.
+        self.scale = scale
+        self.rotation = rotation
 
 
 # --------------------------------------------------------------------------- #
@@ -176,4 +183,5 @@ def decide(cands: list[Candidate], search_shape: tuple[int, int],
         conf = min(conf, 0.45 / max(1.0, math.log2(len(tied) + 1)))
 
     return Decision(float(chosen.x), float(chosen.y), decision, float(conf),
-                    float(pai), len(tied), ranked)
+                    float(pai), len(tied), ranked,
+                    scale=float(chosen.scale), rotation=float(chosen.rotation))

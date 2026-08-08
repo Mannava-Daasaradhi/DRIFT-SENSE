@@ -18,6 +18,7 @@ depends on the peak list being complete and honestly scored.
 from __future__ import annotations
 
 import math
+import sys
 from dataclasses import dataclass
 
 import cv2
@@ -186,7 +187,11 @@ def find_peaks(surface: np.ndarray, tpl_shape: tuple[int, int],
     r = max(1, int(nms_frac * min(th, tw) * 0.5))
     ksz = 2 * r + 1
     dil = cv2.dilate(surface, np.ones((ksz, ksz), np.uint8))
-    is_peak = surface >= dil
+    # A floor keeps a flat/degenerate correlation surface from marking every
+    # pixel as a "peak" (an O(1e6) sort inside the 1s/pair budget) and keeps
+    # out the -1 sentinel nan_to_num leaves in `correlate`. Same pattern as
+    # spectral._detect_peaks.
+    is_peak = (surface >= dil) & (surface > 0.0)
 
     ys, xs = np.nonzero(is_peak)
     if ys.size == 0:
@@ -249,7 +254,11 @@ def match_all_hypotheses(ref: Bands, search: Bands,
             dec_s = decompose(search.hp, search_freqs)
             if dec_s.ratio <= 1e-6:
                 dec_s = None
-        except Exception:
+        except Exception as e:
+            # Silent failure here means the pipeline quietly degrades to plain
+            # ZNCC with no aperiodic disambiguation at all - the hardest stage
+            # to debug blind, so it gets a trace even though it's non-fatal.
+            print(f"[warn] periodic decomposition unavailable: {e}", file=sys.stderr)
             dec_s = None
 
     residual_ratio = 0.0
@@ -281,8 +290,9 @@ def match_all_hypotheses(ref: Bands, search: Bands,
                     if rsurf.shape == surf.shape:
                         w = residual_weight * gate
                         surf = (1.0 - w) * surf + w * rsurf
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[warn] residual rescoring skipped for hypothesis "
+                      f"(scale={s:.3f}, rotation={rot:.2f}): {e}", file=sys.stderr)
 
         cands = find_peaks(surf, tpl.hp.shape[:2], k=k_per_hyp,
                            scale=s, rotation=rot)

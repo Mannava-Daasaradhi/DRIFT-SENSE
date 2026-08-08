@@ -116,7 +116,7 @@ result = localize(reference_path: str,
 ```
 
 Guarantees C can rely on:
-- All twelve keys are **always** present, with the types above. No `None` values except
+- All nine keys are **always** present, with the types above. No `None` values except
   where explicitly stated (there are none — fallback uses `0.0`, `[]`, `1.0`).
 - `candidates` is sorted by `score` descending, `rank` starts at `0`, and `candidates[0]`
   is `(x, y)` **unless** `decision == "tie_broken_by_center"`, in which case `(x, y)` is a
