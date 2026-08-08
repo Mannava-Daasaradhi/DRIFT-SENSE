@@ -325,12 +325,13 @@ def build_pair(style, pair_index, seed, noiseless=False):
 
     # Objective criterion (TECH-SPEC.md S4.1), not a defect-count vibe: how much
     # of the reference window's area is aperiodic content that survives the
-    # /m division into the search image. Thresholds set empirically against
-    # Member B's localizer - level 0 pairs are provably unsolvable, mid-range
-    # pairs are solvable but not trivially so, high-fraction pairs are clean.
+    # /m division into the search image. Thresholds calibrated so a 36-pair
+    # draw lands close to A5.1's target composition (~12 unique / ~16
+    # weakly_ambiguous / ~8 degenerate) - level 0 pairs are provably
+    # unsolvable, mid-range pairs are solvable but not trivially so.
     if aperiodic_fraction <= 0.0:
         ambiguity_class = "degenerate"
-    elif aperiodic_fraction <= 0.06:
+    elif aperiodic_fraction <= 0.148:
         ambiguity_class = "weakly_ambiguous"
     else:
         ambiguity_class = "unique"

@@ -8,6 +8,9 @@ data/*
 !data/dev_v0
 data/dev_v0/*
 !data/dev_v0/dram_00000
+!data/eval
+data/eval/*
+!data/eval/dram_00000
 
 weights/*.pt
 !weights/reranker.pt
