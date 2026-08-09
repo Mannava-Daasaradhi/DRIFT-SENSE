@@ -45,3 +45,8 @@ figures/*
 # and on the slides must be traceable to a file in the repository.
 !results.json
 !results_ood.json
+
+# Component 1 (the PPT) is submitted separately via the i4C portal, not one of
+# the 7 mandatory repo items - keep the generated deck out of the repo itself.
+docs/*.pptx
+docs/*.pdf
