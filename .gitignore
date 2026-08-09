@@ -2,6 +2,11 @@
 __pycache__/
 *.pyc
 
+# Local agent-tooling state (session logs, edit history) - not part of the
+# submission and leaks local absolute paths; never belonged in a public repo.
+.claude-flow/
+.claude/
+
 # Generated pairs are large and reproducible from a seed - keep one sample
 # pair committed per repo requirement #2, gitignore the rest (PLAN.md S3).
 data/*
