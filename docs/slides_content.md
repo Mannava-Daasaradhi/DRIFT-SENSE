@@ -70,7 +70,14 @@ honest confidence report.
   which integrates over 10⁶ pixels of signal instead of the 10⁴ pixels a local scale
   search sees.
 
-*[B: add one paragraph on the correlation / peak-list / NMS approach]*
+Each surviving (scale, rotation) hypothesis builds a resampled, rotated template
+and correlates it against the search image with normalized cross-correlation,
+fusing an intensity channel and a gradient channel (edge structure survives
+detector-gain differences between the two captures better than raw intensity
+does). Rather than `argmax`, every local maximum is kept via non-maximum
+suppression at half the template radius, then refined to sub-pixel precision
+with a quadratic fit on each peak's 3x3 neighbourhood — producing a full ranked
+candidate list, typically 20-30 deep, instead of one silently-arbitrary point.
 
 ---
 
@@ -128,7 +135,7 @@ honest confidence report.
                                  (x, y), confidence, decision
 ```
 
-*[B: replace with the real diagram / figure from the repo]*
+*Rendered version: `figures/pipeline_diagram.png` — paste directly into the slide.*
 
 ---
 
@@ -329,12 +336,20 @@ anything suggests it is wrong).
 
 ## Notes for final polish (C8.1)
 
-- [ ] Replace all [TBD] with real values
-- [ ] Add real figures from `figures/` to slides 6 (success/failure cases)
-- [ ] Get B's algorithm paragraph for Slide 3
-- [ ] Get B's pipeline diagram for Slide 4
-- [ ] Get B's innovation text for Slide 5
-- [ ] Get A's final CITATIONS.md and diff against Slide 9
-- [ ] All numbers traceable to results.json — verify before export
-- [ ] Export PDF as well as PPT
-- [ ] Test all links (GitHub, video) from a logged-out incognito window
+- [ ] Replace remaining [TBD] values — Slide 1 needs Member B's full name, college
+      name, and a contact email; Slide 8 needs the demo video link once C8.2 records
+      it. Nobody but the team can fill these in.
+- [x] ~~Add real figures from `figures/` to slides 6~~ — done, hero images verified
+      against `results.json` (`dram_00022` success, `dram_00002` failure).
+- [x] ~~Get B's algorithm paragraph for Slide 3~~ — written from `driftsense/matching.py`.
+- [x] ~~Get B's pipeline diagram for Slide 4~~ — rendered, `figures/pipeline_diagram.png`.
+- [x] Slide 5's innovation text was already written in full, not a placeholder.
+- [x] ~~Get A's final CITATIONS.md and diff against Slide 9~~ — done, rebuilt Slide 9
+      to match exactly (14 entries, all DOI-verified; Rose 1973 and Lewis 1995
+      excluded per `CITATIONS.md`'s own verification rule).
+- [x] ~~All numbers traceable to results.json — verify before export~~ — done,
+      independently re-run and confirmed (see repo history around commit 69be840).
+- [ ] Export PDF as well as PPT — needs the actual i4C template file and a slide
+      tool (PowerPoint/Google Slides); this markdown is the content, not the deck.
+- [x] ~~Test GitHub link from a logged-out window~~ — confirmed public and loading.
+- [ ] Test the video link once C8.2 records and uploads it.

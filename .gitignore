@@ -39,6 +39,7 @@ figures/*
 !figures/honest_failure_case_ood.png
 !figures/fft_lattice.png
 !figures/decomposition.png
+!figures/pipeline_diagram.png
 
 # Evaluation output is committed as evidence: every number quoted in the README
 # and on the slides must be traceable to a file in the repository.
