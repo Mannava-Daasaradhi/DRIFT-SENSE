@@ -74,7 +74,20 @@ is a hard case.
 
 **Example.** `dram_00028` (err = 38.6 px, `unique`, `decision = "unique"`): the true
 site sits near a quiet region of the array; a periphery block 40 px away produces a
-higher ZNCC score.
+higher ZNCC score. Independently re-checked against `results.json`: the winning
+candidate's rotation estimate is 177.1°, 179.8° away from the true -2.7° - i.e. this
+is really the 4-fold-symmetry failure mode from S1.2 wearing a `unique` label, not a
+distinct mechanism. `aperiodic_content_level` on this pair is high enough that the
+ground-truth `ambiguity_class` reads `unique`, but not high enough to break the
+rotational tie in practice - the aperiodic residual and the raw symmetry ambiguity
+are fighting each other, and here the symmetry wins. `dram_00008` (err = 378 px,
+`pai = 0.999`) is the mirror case: `aperiodic_energy_fraction` = 0.1695, just over
+the `weakly_ambiguous` cutoff (0.148) A's threshold uses, but the correlation stage
+still sees it as a near-total tie and correctly reports minimum confidence (0.533)
+rather than a false-confident wrong answer. Both are boundary cases where the
+ground-truth label and what the algorithm can actually resolve don't quite line up -
+worth widening the margin between `unique` and `weakly_ambiguous` in a future eval
+set, not something to patch by moving the frozen set's threshold now.
 
 **What would improve it.** The re-ranker is the most direct lever: it is trained to
 distinguish true-site texture from boundary texture. That it does not help on OOD

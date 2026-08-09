@@ -141,6 +141,12 @@ def load_model(weights_path: str | None = None):
         return None
     try:
         torch = _torch()
+        # Single-threaded: torch's multi-threaded reduction order for conv/matmul
+        # is not fixed, so the same weights can score candidates slightly
+        # differently across machines with different core counts - enough to
+        # flip a close decision. This patch is 64x64 and the model is ~200k
+        # params, so the speed cost is negligible; the reproducibility is not.
+        torch.set_num_threads(1)
         path = weights_path or default_weights_path()
         if not os.path.isfile(path):
             _LOAD_FAILED = True

@@ -204,8 +204,8 @@ argument for measuring scale instead of assuming it.*
 
 | Metric | Value |
 |--------|-------|
-| Time per pair | **~0.4 s** median on CPU (1000×1000 search) |
-| Magnification estimate | Median error **0.26%**, 33/36 within 2% |
+| Time per pair | CPU-only, hardware-dependent: **~0.6 s** median on the dev RTX 4090 Laptop's CPU, up to ~1.2 s / 1.6 s worst re-measured on a second machine |
+| Magnification estimate | Median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | **0.0%** — never picks a lattice-equivalent site |
 | Confidence calibration (ECE) | **0.054** |
 | 15/15 robustness checks | Corrupt files, 1×1 px, no torch, path with spaces |
@@ -248,8 +248,8 @@ argument for measuring scale instead of assuming it.*
 
 | Metric | Value |
 |--------|-------|
-| Inference time (median) | **~0.4 s / pair** on CPU |
-| Inference time (worst) | **~0.44 s / pair** on CPU |
+| Inference time (median) | **~0.6 s / pair** on CPU (dev machine); up to ~1.2 s re-measured on a second machine — hardware-dependent |
+| Inference time (worst) | **~0.68 s / pair** on CPU (dev machine); up to ~1.6 s re-measured on a second machine |
 | Re-ranker checkpoint | **0.56 MB** (limit: 5 MB) |
 | Re-ranker parameters | 136,497 |
 | Dataset generation (36 pairs) | **~12 s** |

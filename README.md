@@ -135,7 +135,7 @@ claiming high accuracy on this subset is either lucky or not measuring it.
 
 | | |
 |---|---|
-| Time per pair | **~0.6 s** median, 0.68 s worst, on CPU (1000x1000 search, ~100x100 template) |
+| Time per pair | CPU-only, no GPU required. Hardware-dependent: **~0.6 s** median on the RTX 4090 Laptop's CPU (original dev measurement); re-measured at **~1.2 s** median, 1.6 s worst on a second machine during verification. Budget for the slower end on unknown grading hardware. |
 | Magnification estimate | median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | 0.0% |
 | Confidence calibration | ECE **0.054** on `data/eval` (fitted on `data/dev_v0` + `data/ood`; never on `data/eval`) |
