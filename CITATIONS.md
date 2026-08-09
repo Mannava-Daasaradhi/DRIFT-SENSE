@@ -231,6 +231,43 @@ decomposition above.
 
 ---
 
+## Localization algorithm citations (Member B's `driftsense/`, Slide 9 cross-check)
+
+Not part of the SEM forward model this file otherwise covers, but Slide 9
+lists them and the brief requires PPT citations to correspond to the repo's
+citation document - so they belong here too, verified to the same standard,
+not just taken on faith from the slide deck.
+
+✅ **Verified** — Reddy, B.S., Chatterji, B.N. "An FFT-based technique for
+translation, rotation and scale-invariant image registration." *IEEE Trans.
+Image Processing* 5(8), 1266-1271, 1996. DOI:
+[10.1109/83.506761](https://doi.org/10.1109/83.506761). Opened Aug 9, 2026 -
+DOI redirects to the correct IEEE Xplore document record; independently
+corroborated via ADS, CiNii, and Semantic Scholar listings for the same
+title/author/year/volume. Models: the log-polar Fourier-Mellin technique
+`driftsense/spectral.py`'s B4.2 cross-check reimplements as a second,
+independent route to scale and rotation.
+
+✅ **Verified** — Bertinetto, L., Valmadre, J., Henriques, J.F., Vedaldi, A.,
+Torr, P.H. "Fully-Convolutional Siamese Networks for Object Tracking."
+*ECCV 2016 Workshops*, LNCS 9914, 850-865. DOI:
+[10.1007/978-3-319-48881-3_56](https://doi.org/10.1007/978-3-319-48881-3_56).
+Opened Aug 9, 2026 - DOI redirects to the correct Springer record. Models:
+the shared-encoder, feature-concatenation architecture `driftsense/rerank.py`
+follows for the optional re-ranker.
+
+⏳ Lewis, J.P. "Fast Normalized Cross-Correlation." *Vision Interface*,
+120-123, 1995 (justifies `driftsense/matching.py`'s ZNCC formulation). This
+is a pre-DOI-era conference paper with no DOI to verify against - multiple
+independent listings (ResearchGate, Semantic Scholar, the author's own
+scribblethink.org PDF) agree on title/author/venue/year, but every fetch
+attempt today hit a network or JS-rendering wall rather than actually
+opening the content. Per this file's own rule, that is not the same as
+having personally opened it, so it stays a candidate, not verified, even
+though nothing suggests it is wrong.
+
+---
+
 ## Open items before this file is frozen (A5.3, due Aug 11 EOD)
 
 - [x] ~~Personally verify Itoh 2001 (DRAM geometry, stage 1)~~ - done, DOI

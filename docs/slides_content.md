@@ -86,7 +86,7 @@ honest confidence report.
 - **10-stage forward model** (in physical order — not optional):
   1. Analytic geometry at 4× supersample
   2. Edge-distance signed field
-  3. SE yield with edge brightening: `δ = δ_mat · (1 + k_edge·exp(-d/λ)) · sec(θ)^n`
+  3. SE yield with edge brightening: `δ = δ_mat · (1 + k_edge·exp(-d/λ))`
   4. Area downsample to pixel resolution
   5. Beam PSF (Gaussian core + Lorentzian skirt)
   6. Scan distortion: thermal drift + per-row jitter + vibration
@@ -289,33 +289,41 @@ show an ambiguous case with honest low confidence.*
 
 ## Slide 9 — References
 
-*[Member A to finalise — must match CITATIONS.md exactly. Diff them before submission.]*
+Finalised against `CITATIONS.md` on Aug 9, 2026 - every entry below is
+verified there. Two candidates from `CITATIONS.md` are deliberately
+excluded here per that file's own rule ("must not be treated as approved
+or quoted in the slide deck until verified"): Rose 1973 (stage 9, secondary,
+blocked behind institutional auth) and Lewis 1995 (ZNCC matching, a
+pre-DOI-era paper that could not be opened today to confirm - not because
+anything suggests it is wrong).
 
 **SEM physics and image formation**
-1. Reimer, L. *Scanning Electron Microscopy: Physics of Image Formation and Microanalysis*, 2nd ed., Springer, 1998.
-2. Goldstein, J. et al. *Scanning Electron Microscopy and X-Ray Microanalysis*, 4th ed., Springer, 2018.
-3. Seiler, H. "Secondary electron emission in the scanning electron microscope." *J. Appl. Phys.* 54(11), R1–R18, 1983.
+1. Reimer, L. *Scanning Electron Microscopy: Physics of Image Formation and Microanalysis*, 2nd ed., Springer, 1998. DOI: 10.1007/978-3-540-38967-5
+2. Seiler, H. "Secondary electron emission in the scanning electron microscope." *J. Appl. Phys.* 54(11), R1-R18, 1983. DOI: 10.1063/1.332840
+3. Goldstein, J.I. et al. *Scanning Electron Microscopy and X-Ray Microanalysis*, 4th ed., Springer, 2018. DOI: 10.1007/978-1-4939-6676-9
+4. Joy, D.C. *Monte Carlo Modeling for Electron Microscopy and Microanalysis*, Oxford, 1995. DOI: 10.1093/oso/9780195088748.001.0001
 
 **Synthetic SEM generation**
-4. Cizmar, P., Vladár, A.E., Ming, B., Postek, M.T. "Simulated SEM images for resolution measurement." *Scanning* 30(5), 381–391, 2008.
+5. Cizmar, P., Vladar, A.E., Ming, B., Postek, M.T. "Simulated SEM images for resolution measurement." *Scanning* 30(5), 381-391, 2008. DOI: 10.1002/sca.20120
 
-**Noise statistics**
-5. Timischl, F., Date, M., Nemoto, S. "A statistical model of signal-noise in scanning electron microscopy." *Scanning* 34(3), 137–144, 2012.
+**Noise and detector statistics**
+6. Timischl, F., Date, M., Nemoto, S. "A statistical model of signal-noise in scanning electron microscopy." *Scanning* 34(3), 137-144, 2012. DOI: 10.1002/sca.20282
+7. Scharf, D. "Secondary Electron Detectors, Image Quality & Contrast." *Microscopy and Microanalysis* 4(S2), 256-257, 1998. DOI: 10.1017/S1431927600021401
 
-**Drift and scan distortion**
-6. Sutton, M.A. et al. "Scanning Electron Microscopy for Quantitative Small and Large Deformation Measurements." *Experimental Mechanics* 47, 2007.
+**Drift, scan distortion, and charging**
+8. Sutton, M.A. et al. "Scanning Electron Microscopy for Quantitative Small and Large Deformation Measurements, Part I." *Experimental Mechanics* 47, 775-787, 2007. DOI: 10.1007/s11340-007-9042-z
+9. Cazaux, J. "Charging in scanning electron microscopy 'from inside and outside'." *Scanning* 26(4), 181-203, 2004. DOI: 10.1002/sca.4950260406
 
 **Device structure**
-7. Hisamoto, D. et al. "FinFET — a self-aligned double-gate MOSFET scalable to 20 nm." *IEEE Trans. Electron Devices* 47(12), 2320–2325, 2000.
-8. Itoh, K. *VLSI Memory Chip Design*, Springer, 2001.
+10. Hisamoto, D. et al. "FinFET - a self-aligned double-gate MOSFET scalable to 20 nm." *IEEE Trans. Electron Devices* 47(12), 2320-2325, 2000. DOI: 10.1109/16.887014
+11. Itoh, K. *VLSI Memory Chip Design*, Springer, 2001. DOI: 10.1007/978-3-662-04478-0
 
-**Computer vision**
-9. Reddy, B.S. & Chatterji, B.N. "An FFT-based technique for translation, rotation and scale-invariant image registration." *IEEE Trans. Image Processing* 5(8), 1266–1271, 1996.
-10. Lewis, J.P. "Fast Normalized Cross-Correlation." *Vision Interface*, 1995.
-11. Bertinetto, L. et al. "Fully-Convolutional Siamese Networks for Object Tracking." *ECCVW*, 2016.
+**Reciprocal-lattice / periodic-pattern analysis** (not Moisan 2011 - see `CITATIONS.md`'s trap note)
+12. Zaefferer, S. "New developments of computer-aided crystallographic analysis in transmission electron microscopy." *J. Appl. Cryst.* 33, 10-25, 2000. DOI: 10.1107/S0021889899010894
 
-*[A: verify every DOI and link. Add any citations from CITATIONS.md not listed here.
-Slide 4 and this slide must agree exactly — diff them before submission.]*
+**Computer vision / localization algorithm**
+13. Reddy, B.S. & Chatterji, B.N. "An FFT-based technique for translation, rotation and scale-invariant image registration." *IEEE Trans. Image Processing* 5(8), 1266-1271, 1996. DOI: 10.1109/83.506761
+14. Bertinetto, L. et al. "Fully-Convolutional Siamese Networks for Object Tracking." *ECCV 2016 Workshops*, LNCS 9914, 850-865. DOI: 10.1007/978-3-319-48881-3_56
 
 ---
 
