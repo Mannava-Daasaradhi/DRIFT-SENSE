@@ -135,11 +135,11 @@ claiming high accuracy on this subset is either lucky or not measuring it.
 
 | | |
 |---|---|
-| Time per pair | CPU-only, no GPU required. Hardware-dependent: **~0.6 s** median on the RTX 4090 Laptop's CPU (original dev measurement); re-measured at **~1.2 s** median, 1.6 s worst on a second machine during verification. Budget for the slower end on unknown grading hardware. |
+| Time per pair | CPU-only, no GPU required. **1.21 s median / 1.42 s worst** on `data/eval`, **1.26 s / 1.63 s** on `data/ood` — both read straight from the committed `results.json` / `results_ood.json`. An earlier dev-machine run measured roughly half that; we quote the slower, reproducible figure because the grading hardware is unknown. |
 | Magnification estimate | median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | 0.0% |
 | Confidence calibration | ECE **0.054** on `data/eval` (fitted on `data/dev_v0` + `data/ood`; never on `data/eval`) |
-| Re-ranker checkpoint | 0.56 MB, ~217k parameters |
+| Re-ranker checkpoint | 0.56 MB, 136,497 parameters |
 
 Figures land in `figures/` (accuracy vs baseline, error CDF, confidence
 reliability diagram, success case, honest failure case — each also generated

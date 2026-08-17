@@ -211,7 +211,7 @@ argument for measuring scale instead of assuming it.*
 
 | Metric | Value |
 |--------|-------|
-| Time per pair | CPU-only, hardware-dependent: **~0.6 s** median on the dev RTX 4090 Laptop's CPU, up to ~1.2 s / 1.6 s worst re-measured on a second machine |
+| Time per pair | CPU-only: **1.21 s median / 1.42 s worst** (`results.json`), **1.26 s / 1.63 s** on OOD (`results_ood.json`) |
 | Magnification estimate | Median error **0.26%**, 34/36 within 2% |
 | Alias-hit rate | **0.0%** — never picks a lattice-equivalent site |
 | Confidence calibration (ECE) | **0.054** |
@@ -255,8 +255,8 @@ argument for measuring scale instead of assuming it.*
 
 | Metric | Value |
 |--------|-------|
-| Inference time (median) | **~0.6 s / pair** on CPU (dev machine); up to ~1.2 s re-measured on a second machine — hardware-dependent |
-| Inference time (worst) | **~0.68 s / pair** on CPU (dev machine); up to ~1.6 s re-measured on a second machine |
+| Inference time (median) | **1.21 s / pair** on CPU (`data/eval`), 1.26 s on `data/ood` |
+| Inference time (worst) | **1.42 s / pair** on CPU (`data/eval`), 1.63 s on `data/ood` |
 | Re-ranker checkpoint | **0.56 MB** (limit: 5 MB) |
 | Re-ranker parameters | 136,497 |
 | Dataset generation (36 pairs) | **~12 s** |
