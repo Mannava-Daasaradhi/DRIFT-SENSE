@@ -53,7 +53,7 @@ python -m pip install -r requirements.txt
 ### 1. Generate a sample image pair
 
 ```bash
-python generate_dataset.py --style dram --num 1 --out data/smoke --seed 0
+python generate_dataset.py --style dram --num 1 --out data/smoke --seed 3
 ```
 
 This writes `data/smoke/dram_00000/` containing `reference.png`, `search.png` and
@@ -68,12 +68,28 @@ python localize.py data/smoke/dram_00000/reference.png data/smoke/dram_00000/sea
 **stdout is exactly one line and nothing else:**
 
 ```
-412.4,688.0
+671.2,319.1
 ```
 
-That is the predicted centre `(x, y)` in search-image pixels. Every log line,
-warning and traceback goes to stderr, and the exit code is always `0` — so an
-automated grader doing `float(stdout.split(',')[0])` always gets a number.
+That is the predicted centre `(x, y)` in search-image pixels. The ground truth
+for this pair is `(670.9, 319.5)` — check it yourself:
+
+```bash
+python -c "import json; print(json.load(open('data/smoke/dram_00000/meta.json'))['true_center_xy'])"
+```
+
+Every log line, warning and traceback goes to stderr, and the exit code is always
+`0` — so an automated grader doing `float(stdout.split(',')[0])` always gets a
+number.
+
+> **If you try other seeds, expect some to miss badly, and read that as working
+> as intended.** `--seed 3` gives an `unique` pair; `--seed 0` and `--seed 1` give
+> `degenerate` ones — perfect lattices where every site is pixel-identical and the
+> true centre is unrecoverable *in principle*, not by any algorithm. On those the
+> localizer reports low confidence and falls back to the brief's centre rule.
+> `meta.json` records each pair's `ambiguity_class`, and the
+> [results section](#broken-out-by-difficulty--this-is-the-part-that-matters)
+> breaks accuracy out along exactly that axis.
 
 ### 3. Reproduce the reported results
 
