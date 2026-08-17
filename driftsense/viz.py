@@ -100,7 +100,11 @@ def plot_pair(reference: np.ndarray, search: np.ndarray,
         bits.append(decision.replace("_", " "))
     ax.set_title("Search image (1000x1000)   —   " + "   |   ".join(bits), fontsize=11)
     ax.set_xticks([]); ax.set_yticks([])
-    ax.legend(loc="upper right", fontsize=9, framealpha=0.85)
+    # Below the panel, not inside it. On a degenerate pair the alias sites and
+    # the true marker crowd the top-right corner, so an in-axes legend covers
+    # exactly the content this figure exists to show.
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.012), ncol=3,
+              fontsize=9, framealpha=0.85, borderaxespad=0.0)
 
     if title:
         fig.suptitle(title, fontsize=13, y=0.99)

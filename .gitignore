@@ -36,6 +36,7 @@ figures/*
 !figures/accuracy_vs_baseline_ood.png
 !figures/error_cdf_ood.png
 !figures/reliability_ood.png
+!figures/success_case_ood.png
 !figures/honest_failure_case_ood.png
 !figures/fft_lattice.png
 !figures/decomposition.png
